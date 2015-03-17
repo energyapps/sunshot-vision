@@ -63,14 +63,10 @@ var pattern3 = defs.append("pattern")
 
 // load some data
 // d3.json("/sites/prod/files/us_93_02_v3.json", function(error, us) {
-d3.json("js/us_93_02_v3.json", function(error, us) {
+d3.json("js/wind_vision_v9.json", function(error, us) {
 	if (error) return console.error(error);
 
 	var TheData = topojson.feature(us, us.objects.us_10m).features		
-
-	// d3.json("/sites/prod/files/offshore2.json", function(error, offshore) {
-		d3.json("js/offshore2.json", function(error, offshore) {
-		if (error) return console.error(error + "error in offshore");
 
 		// Do something on the click of selector
 		
@@ -88,7 +84,12 @@ d3.json("js/us_93_02_v3.json", function(error, us) {
 
 		var typeArray = [[],[],[],[],[],[],[],[],[]];
 
+		console.log(data2[0])
+
+// This is where the data names are grouped.
 		for (var datapoint in data2[0].properties){
+			console.log(datapoint)
+			// console.log(data2[0])
 	
 	 		if (datapoint === "name") {
 	 			typeArray[0].push(datapoint)
@@ -117,6 +118,11 @@ d3.json("js/us_93_02_v3.json", function(error, us) {
 	 		else if (datapoint.substring(2,0) == "bi") {
 	 			typeArray[8].push(datapoint)	
 	 		}
+	 		else {	 			
+	 			typeArray[0].push(datapoint)
+	 			console.log('hello')
+	 			console.log(typeArray[0])
+			}
 	 		;
 	 	}
 
@@ -318,15 +324,15 @@ d3.json("js/us_93_02_v3.json", function(error, us) {
 		else if (gotype == "or") { var k = 6; var gotypename = "Other Renewable Energy"} 
 		else if (gotype == "bi") { var k = 8; var gotypename = "Biofuels";} 
 		else if (gotype == "nu") { var k = 7; var gotypename = "Nuclear Power"}
-		else {		}
+		else { var k = 1; var gotypename = "Total Energy Produced"}
 
 // need to add in Biofuels
 
 			var type = typeArray[k][i]
-    	var USA = numberWithCommas(Math.round((offshore[2][type]/1000)))
 
 			d3.selectAll(".sly").remove();
 
+			var USA = "100"
 
 			// Redo the header info
 			totalDiv.innerHTML = '<h2>' + gotypename + '</h2><h3>' + USA + ' Trillion BTU</h3>'
@@ -335,13 +341,6 @@ d3.json("js/us_93_02_v3.json", function(error, us) {
 			var radius = d3.scale.sqrt()  
 				.domain([0, 1000])
 				.range([(2), (w / 45)]); 
-
-			// load offshore data, and below do the circle creation but with lat/long instead of a centroid-from-topo
-
-			var gulf = [(path.centroid(TheData[28])[0] - 30),(path.centroid(TheData[28])[1] + (w / 10))] //using louisiana as reference
-			var pac = [(path.centroid(TheData[8])[0] - (w / 20)),(path.centroid(TheData[8])[1] + (w / 10))]	//using california as reference
-
-			// svg.selectAll(".gu").data([]).exit().remove();			
 
 		// This is a loop
 			svg.selectAll("circle.bubble")
@@ -352,7 +351,8 @@ d3.json("js/us_93_02_v3.json", function(error, us) {
 	      .attr("transform", function(d) { 
 	        return "translate(" + path.centroid(d) + ")"; })
 	      .attr("r", function(d) { 		
-	      	var raw = d.properties[type]
+	      	// var raw = d.properties[type]
+	      	var raw = d.properties.Landbased2050
 
 	      	if (raw === 0) {
 	      		return 0;
@@ -361,48 +361,7 @@ d3.json("js/us_93_02_v3.json", function(error, us) {
 	      	};						        
 	      })
 	      .attr("text", function(d){ return d.properties.id});	
-			
-			// create the gulf coast div
-			svg.selectAll("circle.bubble2")
-				// .attr("class", "gu")
-	      .attr("transform", function(d) { 
-	        return "translate(" + gulf + ")"; })
-	      .attr("r", function(d) { 		
-					var raw = offshore[0][type] / 1000;
-	       	if (raw === 0) {
-	      		return 0;
-	      	} else {
-	      		return radius(raw);
-	      	};
-	      })
-	      .attr("j", 0)
-	      .attr("text", function(d){ 
-	      	return offshore[0]["StateName"]
-	      })
-	      .text(function(d){ 
-	      	return offshore[0]["StateName"]
-	      });				
-
-	    svg.selectAll("circle.bubble3")
-				// .attr("class", "gu")
-	      .attr("transform", function(d) { 
-	        return "translate(" + pac + ")"; })
-	      .attr("r", function(d) { 		
-	      	var raw = offshore[1][type] / 1000;
-	       	if (raw === 0) {
-	      		return 0;
-	      	} else {
-	      		return radius(raw);
-	      	};	      	
-	      })
-	      .attr("j", 1)
-	      .attr("text", function(d){
-		       return offshore[1]["StateName"]
-		     })
-	      .text(function(d){ 
-	      	return offshore[1]["StateName"]
-	      });	;	
-
+		
 
 
 			var margin	= w / 20;
@@ -439,136 +398,136 @@ d3.json("js/us_93_02_v3.json", function(error, us) {
 		} //end bubbles function
 
 	// create the tooltip
-	function tooltip(d) {         
-		var gotype = $("select").val()
+// 	function tooltip(d) {         
+// 		var gotype = $("select").val()
 
-		if (gotype == "to") { var k = 1; var gotypename = "Total Energy Produced"} 
-		else if (gotype == "co") { var k = 2; var gotypename = "Coal"} 
-		else if (gotype == "cr") { var k = 3; var gotypename = "Crude Oil"} 
-		else if (gotype == "na") { var k = 4; var gotypename = "Natural Gas"} 
-		else if (gotype == "tr") { var k = 5; var gotypename = "Total Renewable Energy"} 
-		else if (gotype == "or") { var k = 6; var gotypename = "Other Renewable Energy"} 
-		else if (gotype == "bi") { var k = 8; var gotypename = "Biofuels"} 
-		else if (gotype == "nu") { var k = 7; var gotypename = "Nuclear Power"}
-		else {		}
+// 		if (gotype == "to") { var k = 1; var gotypename = "Total Energy Produced"} 
+// 		else if (gotype == "co") { var k = 2; var gotypename = "Coal"} 
+// 		else if (gotype == "cr") { var k = 3; var gotypename = "Crude Oil"} 
+// 		else if (gotype == "na") { var k = 4; var gotypename = "Natural Gas"} 
+// 		else if (gotype == "tr") { var k = 5; var gotypename = "Total Renewable Energy"} 
+// 		else if (gotype == "or") { var k = 6; var gotypename = "Other Renewable Energy"} 
+// 		else if (gotype == "bi") { var k = 8; var gotypename = "Biofuels"} 
+// 		else if (gotype == "nu") { var k = 7; var gotypename = "Nuclear Power"}
+// 		else {		}
 
-		var type = typeArray[k][i]
+// 		var type = typeArray[k][i]
 
-		// grab the width to define breakpoints
-		width = parseInt(d3.select("#master_container").style("width"))
+// 		// grab the width to define breakpoints
+// 		width = parseInt(d3.select("#master_container").style("width"))
 
-		// Remove everything and start over.
-    d3.selectAll(".tool").remove();
+// 		// Remove everything and start over.
+//     d3.selectAll(".tool").remove();
 
     
 
-// store the data
-	var data = d;
-    if (this.className.animVal != "bubble" ) {
-    	centroid = [(this.transform.animVal[0].matrix.e), (this.transform.animVal[0].matrix.f)]    	
-    	toolName = this.innerHTML;
-    	if (toolName === "Gulf of Mexico") {
-    		j = 0;
-    	}
-    	else if (toolName === "Pacific") {
-   			j = 1;
-    	};    	
-    	raw = offshore[j][type] / 1000;
-    } else {
-    	centroid = path.centroid(data);
-    	toolName = data.properties.name;       
-    	raw = data.properties[type]    
-    };
+// // store the data
+// 	var data = d;
+//     if (this.className.animVal != "bubble" ) {
+//     	centroid = [(this.transform.animVal[0].matrix.e), (this.transform.animVal[0].matrix.f)]    	
+//     	toolName = this.innerHTML;
+//     	if (toolName === "Gulf of Mexico") {
+//     		j = 0;
+//     	}
+//     	else if (toolName === "Pacific") {
+//    			j = 1;
+//     	};    	
+//     	raw = offshore[j][type] / 1000;
+//     } else {
+//     	centroid = path.centroid(data);
+//     	toolName = data.properties.name;       
+//     	raw = data.properties[type]    
+//     };
    
-    // where it hangs based on view size
-    if (width > 900) {
-      if (centroid[1] < 250) {
-        centroid_adjusted = [(centroid[0]-85),(centroid[1]+25)];
-      } else {
-        centroid_adjusted = [(centroid[0]-85),(centroid[1]-80)];
-      };        
-    }
-    else if (width > 700) {  
-      if (centroid[1] < 225) {
-        centroid_adjusted = [(centroid[0]-85),(centroid[1]+25)];
-      } else {
-        centroid_adjusted = [(centroid[0]-85),(centroid[1]-80)];
-      };
-    }
-    else if (width > 480) {
-      if (centroid[0] < width / 2) {
-        centroid_adjusted = [(width - 175),(5)];        
-      } else {
-        centroid_adjusted = [(5),(5)];               
-      };
-    } else {
-      if (centroid[0] < 200) {
-        centroid_adjusted = [(width - 175),(5)];        
-      } else {
-        centroid_adjusted = [(5),(5)];               
-      };
-    };    
+//     // where it hangs based on view size
+//     if (width > 900) {
+//       if (centroid[1] < 250) {
+//         centroid_adjusted = [(centroid[0]-85),(centroid[1]+25)];
+//       } else {
+//         centroid_adjusted = [(centroid[0]-85),(centroid[1]-80)];
+//       };        
+//     }
+//     else if (width > 700) {  
+//       if (centroid[1] < 225) {
+//         centroid_adjusted = [(centroid[0]-85),(centroid[1]+25)];
+//       } else {
+//         centroid_adjusted = [(centroid[0]-85),(centroid[1]-80)];
+//       };
+//     }
+//     else if (width > 480) {
+//       if (centroid[0] < width / 2) {
+//         centroid_adjusted = [(width - 175),(5)];        
+//       } else {
+//         centroid_adjusted = [(5),(5)];               
+//       };
+//     } else {
+//       if (centroid[0] < 200) {
+//         centroid_adjusted = [(width - 175),(5)];        
+//       } else {
+//         centroid_adjusted = [(5),(5)];               
+//       };
+//     };    
 
-    // where it hangs within the tip
-    tip_text  = [(centroid_adjusted[0] + 80 + 5),(centroid_adjusted[1] + 20)];
-    tip_text2  = [(centroid_adjusted[0] + 80 + 5),(centroid_adjusted[1] + 35)];
-    tip_close = [(centroid_adjusted[0] + 80*2),(centroid_adjusted[1]+(15))];
+//     // where it hangs within the tip
+//     tip_text  = [(centroid_adjusted[0] + 80 + 5),(centroid_adjusted[1] + 20)];
+//     tip_text2  = [(centroid_adjusted[0] + 80 + 5),(centroid_adjusted[1] + 35)];
+//     tip_close = [(centroid_adjusted[0] + 80*2),(centroid_adjusted[1]+(15))];
 
-    // build the rectangle
-    var tooltipContainer = svg.append("g")
-      .attr("id", "tooltip")
-      .attr("class", "tool")
-      .append("rect")
-        // .attr("id", "tooltip")
-        .attr("transform", function() { 
-          return "translate(" + centroid_adjusted + ")"; })
-        .attr("width", (170))
-        .attr("height", (55))
-        .attr("rx", 6)
-        .attr("ry", 6)
+//     // build the rectangle
+//     var tooltipContainer = svg.append("g")
+//       .attr("id", "tooltip")
+//       .attr("class", "tool")
+//       .append("rect")
+//         // .attr("id", "tooltip")
+//         .attr("transform", function() { 
+//           return "translate(" + centroid_adjusted + ")"; })
+//         .attr("width", (170))
+//         .attr("height", (55))
+//         .attr("rx", 6)
+//         .attr("ry", 6)
   	
-  	// tip texts
-    svg
-      .append("text")
-      .attr("class","tip-text tool")
-      .text(function(d){
-          return toolName;
-      })
-      .attr("transform", function() { 
-        return "translate(" + tip_text + ")"; });
+//   	// tip texts
+//     svg
+//       .append("text")
+//       .attr("class","tip-text tool")
+//       .text(function(d){
+//           return toolName;
+//       })
+//       .attr("transform", function() { 
+//         return "translate(" + tip_text + ")"; });
 
-    var toolbody = svg
-      .append("text")
-      .attr("class","tip-text2 tool")
-      .attr("transform", function() { 
-        return "translate(" + tip_text2 + ")"; });
+//     var toolbody = svg
+//       .append("text")
+//       .attr("class","tip-text2 tool")
+//       .attr("transform", function() { 
+//         return "translate(" + tip_text2 + ")"; });
 
-    toolbody.append("tspan")
-      .text(function(d){
-        return gotypename + ":";
-      })
-      .attr("x",0)
-      .attr("y",0);
+//     toolbody.append("tspan")
+//       .text(function(d){
+//         return gotypename + ":";
+//       })
+//       .attr("x",0)
+//       .attr("y",0);
 
-    toolbody.append("tspan")
-      .text(function(d){
+//     toolbody.append("tspan")
+//       .text(function(d){
                
-        return raw + " Trillion Btu";
-      })
-      .attr("x",0)
-      .attr("y",15);
+//         return raw + " Trillion Btu";
+//       })
+//       .attr("x",0)
+//       .attr("y",15);
 
-    svg.append("g")
-      .attr("class", "closer tool")
-      .attr("transform", function(){
-        return "translate(" + tip_close + ")";
-      })
-        .append("text")
-        .attr("class", "tip-text2 tool")
-        .text("X").on("click", function(){
-        	d3.selectAll(".tool").remove();
-        });
-	}
+//     svg.append("g")
+//       .attr("class", "closer tool")
+//       .attr("transform", function(){
+//         return "translate(" + tip_close + ")";
+//       })
+//         .append("text")
+//         .attr("class", "tip-text2 tool")
+//         .text("X").on("click", function(){
+//         	d3.selectAll(".tool").remove();
+//         });
+// 	}
 
 		// begin looping stuff
 		var num	= 19; //number of iterations, i.e. years		
@@ -579,9 +538,9 @@ d3.json("js/us_93_02_v3.json", function(error, us) {
 		var m=0;
 
 		function start() {
-		if (play != "undefined") {
-			clearInterval(play);	
-		};
+			if (play != "undefined") {
+				clearInterval(play);	
+			};
 			
 			if (i === num) {
 				i -= (num+1);
@@ -589,44 +548,44 @@ d3.json("js/us_93_02_v3.json", function(error, us) {
 			play = setInterval(mechanic,1000);	
 		}
 
-		function pause() {
+		// function pause() {
 			
-			if (m === 0 && i != num) {
-				image.attr("xlink:href", "img/mediaButtons_play.png");
-				m+=1;
-				clearInterval(play);		 
-			} else if (m === 1 && i != num) {
-				image.attr("xlink:href", "img/mediaButtons_pause.png");
-				m-=1;
-				play = setInterval(mechanic,1000);	
-			} else {
-				image.attr("xlink:href", "img/mediaButtons_pause.png"); //restart at the beginning??
-				i-= (num+1);
-				play = setInterval(mechanic,1000);	
-			}				
-		}
+		// 	if (m === 0 && i != num) {
+		// 		image.attr("xlink:href", "img/mediaButtons_play.png");
+		// 		m+=1;
+		// 		clearInterval(play);		 
+		// 	} else if (m === 1 && i != num) {
+		// 		image.attr("xlink:href", "img/mediaButtons_pause.png");
+		// 		m-=1;
+		// 		play = setInterval(mechanic,1000);	
+		// 	} else {
+		// 		image.attr("xlink:href", "img/mediaButtons_pause.png"); //restart at the beginning??
+		// 		i-= (num+1);
+		// 		play = setInterval(mechanic,1000);	
+		// 	}				
+		// }
 
-		function ff() {			
-			if (i === num) {
-				image.attr("xlink:href", "img/mediaButtons_play.png");
-				i-=(num);
-				rebuildLoop(i);
-			} else {				
-				i +=1;
-				rebuildLoop(i);	
-			};			
-		}
+		// function ff() {			
+		// 	if (i === num) {
+		// 		image.attr("xlink:href", "img/mediaButtons_play.png");
+		// 		i-=(num);
+		// 		rebuildLoop(i);
+		// 	} else {				
+		// 		i +=1;
+		// 		rebuildLoop(i);	
+		// 	};			
+		// }
 
-		function rw() {		
-			if (i === 0) {
-				image.attr("xlink:href", "img/mediaButtons_redo.png");
-				i+=(num);
-				rebuildLoop(i);
-			} else {
-				i -=1;
-				rebuildLoop(i);	
-			};					
-		}
+		// function rw() {		
+		// 	if (i === 0) {
+		// 		image.attr("xlink:href", "img/mediaButtons_redo.png");
+		// 		i+=(num);
+		// 		rebuildLoop(i);
+		// 	} else {
+		// 		i -=1;
+		// 		rebuildLoop(i);	
+		// 	};					
+		// }
 
 		// what to do each iteration
 		function mechanic() {			
@@ -655,22 +614,21 @@ d3.json("js/us_93_02_v3.json", function(error, us) {
 	  resize(); 	    		  
 
 	  // start looping
-	  start(); 
+	  // start(); 
 
 	  d3.select(window).on('resize', resize); 
-	  d3.selectAll("circle.bubble").on('click', tooltip);
-	  d3.selectAll("circle.bubble2").on('click', tooltip);
-	  d3.selectAll("circle.bubble3").on('click', tooltip);
-		d3.selectAll(".rpt2").on('click', pause);
-		d3.selectAll(".rw2").on('click', rw);
-		d3.selectAll(".ff2").on('click', ff);
+	  // d3.selectAll("circle.bubble").on('click', tooltip);
+	  // d3.selectAll("circle.bubble2").on('click', tooltip);
+	  // d3.selectAll("circle.bubble3").on('click', tooltip);
+		// d3.selectAll(".rpt2").on('click', pause);
+		// d3.selectAll(".rw2").on('click', rw);
+		// d3.selectAll(".ff2").on('click', ff);
 
 	  //function to add commas
 		function numberWithCommas(x) {
 		  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		}
 
-	}); //end offshore.json
 }); //end states.json
 		}(jQuery));  
 
