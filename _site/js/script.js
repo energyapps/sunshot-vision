@@ -1,18 +1,6 @@
 var totalDiv = document.getElementById('totalDiv')
 	var boxWidth = 40;
 
-// var color = d3.scale.ordinal()
-//     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-
-// var arc = d3.svg.arc()
-//     // .outerRadius(radius - 10)
-//     .outerRadius(30 - 10);
-//     .innerRadius(0);
-
-// var pie = d3.layout.pie()
-//     .sort(null)
-//     .value(function(d) { return d.value; });
-
 // Set some variables
 var width = parseInt(d3.select("#master_container").style("width")),
   height = width / 2;
@@ -39,37 +27,6 @@ var legend = svg.append("g")
 var imgWidth = 50;
 var imgHeight = 50;
 
-var defs = svg.append("defs")
-  .attr("id","mdef")
-    
-var pattern = defs.append("pattern")
-  .attr("height",imgHeight)
-  .attr("width",imgWidth)
-  .attr("id","imageID1")
-
-var image = pattern.append("svg:image")
-    .attr("width",imgWidth - 10)
-    .attr("height",imgHeight - 10)
-    .attr("xlink:href", "img/mediaButtons_pause.png");
-
-var pattern2 = defs.append("pattern")
-  .attr("height",imgHeight)
-  .attr("width",imgWidth)
-  .attr("id","imageID2")
-	.append("svg:image")
-    .attr("width",imgWidth - 10)
-    .attr("height",imgHeight - 10)
-    .attr("xlink:href", "img/mediaButtons_rewind.png");    
-
-var pattern3 = defs.append("pattern")
-  .attr("height",imgHeight)
-  .attr("width",imgWidth)
-  .attr("id","imageID3")
-	.append("svg:image")
-    .attr("width",imgWidth - 10)
-    .attr("height",imgHeight - 10)
-    .attr("xlink:href", "img/mediaButtons_ff.png");
-
 (function ($) { 
 
 // load some data
@@ -82,31 +39,50 @@ d3.json("js/wind_vision_v9.json", function(error, us) {
 		// Do something on the click of selector
 		
 		$('.year').click(function(e) {
-			if (i == num) {
-				start();						
-			} else {
-				var width = parseInt(d3.select("#master_container").style("width"));
-				$('.year').removeClass('active');
-				$(this).addClass('active');
-				BuildBubbles(width);
+			if (m === 1) {
+				$('.rpt2 span img').attr('src', 'img/mediaButtons_play.png');				
+				m-=1;
 			};
-		});
+
+			clearInterval(play);
+			var width = parseInt(d3.select("#master_container").style("width"));
+			$('.year').removeClass('active');
+			$(this).addClass('active');
+			i =  Number($(this).attr("idnum"));
+			BuildBubbles(width);
+			console.log("you selected the year, at index: " + i)
+			console.log("this is m: " + m)
+		});	
+
+function pause() {
+
+			if (m === 0 && i != num) {				
+				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png');				
+				m+=1;
+				play = setInterval(mechanic,1000);	
+				// clearInterval(play);		 
+			} else if (m === 1 && i != num) {
+				$('.rpt2 span img').attr('src', 'img/mediaButtons_play.png');				
+				m-=1;
+				// play = setInterval(mechanic,1000);
+				clearInterval(play);	
+				console.log('you cleared the interval in "pause"')
+			} else {
+				console.log('end of loop and rebiginng')
+				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png'); //restart at the beginning??
+				i = 0;
+				play = setInterval(mechanic,1000);	
+				// here i want to reset the variables to i=0 m=0
+			}		
+			console.log('you hit pause at: ' + i)		
+		}
 
 
-		// $('select').change(function (e){
-		// 	if (i == num) {
-		// 		start();						
-		// 	} else {
-		// 		var width = parseInt(d3.select("#master_container").style("width"));
-		// 		BuildBubbles(width);
-		// 	};
-		// });
 
 
 		var data2 = topojson.feature(us, us.objects.us_10m).features
 
 		var typeArray = [[],[],[],[],[],[]];
-
 
 // This is where the data names are grouped.
 		for (var datapoint in data2[0].properties){
@@ -130,8 +106,6 @@ d3.json("js/wind_vision_v9.json", function(error, us) {
 	 		};
 	 	}
 
-	 	// console.log(typeArray)	 	
-
 		//build a map outside of resize
 		svg.selectAll(".state")
 	    .data(topojson.feature(us, us.objects.us_10m).features)
@@ -146,37 +120,6 @@ d3.json("js/wind_vision_v9.json", function(error, us) {
 		var bubblediv = svg.append("g")
 			.attr("class", "bubbles")
 
-		var repeatz = svg.append("g")
-			.attr("class", "rpt")
-			.attr("id", "repeater")
-			.append("rect")					
-				.attr("class","rpt2")
-				.attr("width", boxWidth)
-        .attr("height", boxWidth)
-	      .style("fill", "transparent")       // this code works OK
-	      .style("fill", "url(#imageID1)");
-
-	  var rewind = svg.append("g")
-			.attr("class", "rpt")
-			.attr("id", "rewind")
-			.append("rect")					
-				.attr("class","rw2")
-				.attr("width", boxWidth)
-        .attr("height", boxWidth)
-	      .style("fill", "transparent")       // this code works OK
-	      .style("fill", "url(#imageID2)");
-
-		var fastforward = svg.append("g")
-			.attr("class", "rpt")
-			.attr("id", "fastforward")
-			.append("rect")					
-				.attr("class","ff2")
-				.attr("width", boxWidth)
-        .attr("height", boxWidth)
-	      .style("fill", "transparent")       // this code works OK
-	      .style("fill", "url(#imageID3)");
-
-
 	      //build the bubbles for all data
 		bubblediv.selectAll("circle")
 			.data(topojson.feature(us, us.objects.us_10m).features)
@@ -189,9 +132,6 @@ d3.json("js/wind_vision_v9.json", function(error, us) {
 			if (k = "undefined") { k = 0;};
 
 			d3.selectAll(".lg").remove();
-			// d3.selectAll("#slider").remove();
-			// d3.selectAll(".sly1").remove();
-			// d3.selectAll(".rpt").remove();
 
 			// resize width
 			var width = parseInt(d3.select("#master_container").style("width")),
@@ -223,46 +163,6 @@ d3.json("js/wind_vision_v9.json", function(error, us) {
 			var boxMargin = margin*1.5;
 			var boxSegment = 3*boxWidth + (boxMargin);
 			var barWidth = width - margin - boxSegment;   
-
-			svg.selectAll(".rw2")
-				.attr("transform", function() { 
-          return "translate("+ (barWidth + margin + (boxMargin / 2)) + ","+ top +")"; });
-        
-			svg.selectAll(".rpt2")
-				.attr("transform", function() { 
-          return "translate("+ (barWidth + margin + boxWidth + (boxMargin / 2)) + ","+ top +")"; });
-
-			svg.selectAll(".ff2")
-				.attr("transform", function() { 
-          return "translate("+ (barWidth + margin + (2* boxWidth) + (boxMargin / 2)) + ","+ top +")"; });
-
-			// var sliderContainer = svg.append("g")
-	  //     .attr("id", "slider")
-	  //     .attr("class", "sly1")
-	  //     .append("rect")
-	  //       // .attr("id", "tooltip")
-	  //       .attr("transform", function() { 
-	  //         return "translate("+ left + ","+ top +")"; })
-	  //       .attr("width", barWidth)
-	  //       .attr("height", (2))
-
-   //    svg.append("g")
-   //    	.attr("id", "sliderTick")
-   //    	.attr("class", "sly1")
-   //    	.append("rect")
-			// 		.attr("transform", function() { 
-	  //         return "translate("+ left + ","+ top +")"; })
-	  //       .attr("width", 2)
-	  //       .attr("height", 6);
-
-	  //   svg.append("g")
-   //    	.attr("id", "sliderTick2")
-   //    	.attr("class", "sly1")
-   //    	.append("rect")
-			// 		.attr("transform", function() { 
-	  //         return "translate("+ (barWidth + margin) + ","+ top +")"; })
-	  //       .attr("width", 2)
-	  //       .attr("height", 6);
 
 			var radius = d3.scale.sqrt()  
 				.domain([0, 5])
@@ -311,12 +211,10 @@ d3.json("js/wind_vision_v9.json", function(error, us) {
 		// Tooltips section goes here
 
 		function BuildBubbles(w, type) {		
-					// (function ($) { 
-			// var gotype = $("select").val()
-					// }(jQuery));  
 
 			// var gotype = $(this).attr('data-year');
 			
+			//Set the new active category before the build, then you just rebuild the new one
 			var gotype = $('.active').attr('data-year');
 
 		     if (gotype == "00") { var k = 0; var gotypename = "2000"} 
@@ -402,9 +300,6 @@ d3.json("js/wind_vision_v9.json", function(error, us) {
 	// create the tooltip
 	function tooltip(d) {         
 		var gotype = $("select").val()
-
-		console.log(d)
-		console.log(d.properties)
 
 		     if (gotype == "00") { var k = 0; var gotypename = "2000"} 
 		else if (gotype == "10") { var k = 1; var gotypename = "2010"} 
@@ -533,8 +428,8 @@ d3.json("js/wind_vision_v9.json", function(error, us) {
 	}
 
 		// begin looping stuff
-		var num	= 19; //number of iterations, i.e. years		
-		var i = 0; // which year you are on when you start 
+		var num	= 6; //number of iterations, i.e. years		
+		var i = 1; // which year you are on when you start 
 		// var k = 1; // which type of data you are looking at (total vs crude, etc)
 		var play;
 
@@ -546,71 +441,72 @@ d3.json("js/wind_vision_v9.json", function(error, us) {
 			};
 			
 			if (i === num) {
-				i -= (num+1);
+				i -= (num);
 			};			
 			play = setInterval(mechanic,1000);	
 		}
 
-		// function pause() {
-			
-		// 	if (m === 0 && i != num) {
-		// 		image.attr("xlink:href", "img/mediaButtons_play.png");
-		// 		m+=1;
-		// 		clearInterval(play);		 
-		// 	} else if (m === 1 && i != num) {
-		// 		image.attr("xlink:href", "img/mediaButtons_pause.png");
-		// 		m-=1;
-		// 		play = setInterval(mechanic,1000);	
-		// 	} else {
-		// 		image.attr("xlink:href", "img/mediaButtons_pause.png"); //restart at the beginning??
-		// 		i-= (num+1);
-		// 		play = setInterval(mechanic,1000);	
-		// 	}				
-		// }
+		function pause() {
 
-		// function ff() {			
-		// 	if (i === num) {
-		// 		image.attr("xlink:href", "img/mediaButtons_play.png");
-		// 		i-=(num);
-		// 		rebuildLoop(i);
-		// 	} else {				
-		// 		i +=1;
-		// 		rebuildLoop(i);	
-		// 	};			
-		// }
-
-		// function rw() {		
-		// 	if (i === 0) {
-		// 		image.attr("xlink:href", "img/mediaButtons_redo.png");
-		// 		i+=(num);
-		// 		rebuildLoop(i);
-		// 	} else {
-		// 		i -=1;
-		// 		rebuildLoop(i);	
-		// 	};					
-		// }
+			if (m === 0 && i != num) {				
+				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png');				
+				m+=1;
+				play = setInterval(mechanic,1000);	
+				// clearInterval(play);		 
+			} else if (m === 1 && i != num) {
+				$('.rpt2 span img').attr('src', 'img/mediaButtons_play.png');				
+				m-=1;
+				// play = setInterval(mechanic,1000);
+				clearInterval(play);	
+				console.log('you cleared the interval in "pause"')
+			} else {
+				console.log('end of loop and rebiginng')
+				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png'); //restart at the beginning??
+				i = 0;
+				play = setInterval(mechanic,1000);	
+				// here i want to reset the variables to i=0 m=0
+			}		
+			console.log('you hit pause at: ' + i)		
+		}
 
 		// what to do each iteration
 		function mechanic() {			
-			i += 1;								
-			if (i === num) {			
-				image.attr("xlink:href", "img/mediaButtons_redo.png");
-				// image.attr("xlink:href", "http://energy.gov/sites/prod/files/arrow_160.png");				
-				clearInterval(play);		 
-			}							
+			i += 1;		
 			rebuildLoop(i);
+			if (i === num) {							
+				$('.rpt2 span img').attr('src', 'img/mediaButtons_redo.png');				
+				clearInterval(play);		 
+				console.log('you cleared the interval by reaching the end of mechanic')
+			}							
+			
 
 		}
 
 		function rebuildLoop(i) {			
 			// define this type, then send it in
-			var type = typeArray[k]
+			// var type = typeArray[k]
 			
 			// Wish I didn't have to go to the window EVERY time we build the bubbles. 
 			// Wish i could do it on every change of window, set "globally" till next change...but alas.
-			var width = parseInt(d3.select("#master_container").style("width"));
+			var width = parseInt(d3.select("#master_container").style("width"));			
 
-			BuildBubbles(width, type)
+			//convaluted way to add next and next and next color to lis.			
+			if (i === 1) {
+				$('.year').removeClass('active');
+				$('.year:first-child').addClass('active')							
+			} else {
+				$('.active').next().addClass('active2')
+				$('.year').removeClass('active');
+				$('.active2').addClass('active');
+				$('.active').removeClass('active2');
+			};
+
+
+			// $(this).addClass('active');
+			BuildBubbles(width);
+
+			console.log('rebuildloop is at: ' + i)
+			// BuildBubbles(width, type)
 		}
 		
 		// initial run
@@ -621,9 +517,10 @@ d3.json("js/wind_vision_v9.json", function(error, us) {
 
 	  d3.select(window).on('resize', resize); 
 	  d3.selectAll("circle.bubble").on('click', tooltip);
-		// d3.selectAll(".rpt2").on('click', pause);
-		// d3.selectAll(".rw2").on('click', rw);
-		// d3.selectAll(".ff2").on('click', ff);
+	  $('.rpt2').click(function(e) {
+	  	pause();
+	  });
+
 
 	  //function to add commas
 		function numberWithCommas(x) {
