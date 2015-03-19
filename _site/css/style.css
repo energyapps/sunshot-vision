@@ -1,3 +1,97 @@
+/********************************
+Legend
+********************************/
+#legend-content {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  background-color: rgb(221,221,221);
+}
+
+.my-legend .legend-title {
+  text-align: center;
+  font-size: 14px;
+  padding-top: 10px;
+  /*float: right;*/
+  color: #444;
+  font-family:'Avenir LT W02 35 Light'
+}
+
+.my-legend .legend-scale ul {
+  margin: 0;
+  padding: 0;
+  float: left;
+  list-style: none;
+  /*position: relative;*/
+  /*width: 100%;*/
+  display: block;
+  padding-left: 10px;
+  }
+
+.my-legend .legend-scale ul li {
+  display: block;
+  font-family: "Avenir LT W02 35 Light",verdana,sans-serif;   
+  float: left;
+  width: 50px;  
+  text-align: center;
+  /*font-size: 80%;*/
+  list-style: none;
+  color: #444;
+  font-size: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: rgb(242,242,242);
+  border-left:  1px solid #fff;
+  border-bottom: 1px solid #fff;
+  border-top: 1px solid #fff;
+  cursor: pointer;
+  transition: background-color 300ms ease-out;
+  }
+
+.my-legend .legend-scale ul li:hover {
+  background-color: rgb(197,225,159);
+  transition: background-color 300ms ease-out;
+}
+
+.my-legend .legend-scale ul li.active {
+  background-color: rgb(197,225,159);
+  transition: background-color 300ms ease-out;
+}
+
+.my-legend .legend-scale ul li:last-child {
+  border-right: 1px solid #fff;
+}
+
+.my-legend ul.legend-labels li span {
+  display: block;
+  float: right;
+  height: 100%;
+  width: 100%;
+  /*border-left: 2px solid #fff;*/
+  /*margin-bottom: 5px;*/
+  }
+
+.my-legend .legend-scale ul li img {
+  padding-top: 4px;
+  height: 20px;
+}
+
+.buttonsi {
+  padding: 0 !important;
+}
+
+.buttonsi:hover {
+  background-color: rgb(242,242,242) !important;
+}
+
+.my-legend a {
+  color: #777;
+  }
+
+.my-legend {
+  width: 100%;
+}
+
  #dis1  h1,  #dis1 h2,  #dis1 h3,  #dis1 h4, #dis1  p {
   border-bottom: none !important;
   color: #333;
@@ -292,3 +386,6 @@ cursor: pointer;
   padding-bottom:70% !important; 
  }
 }
+
+
+

@@ -38,20 +38,53 @@ layout: post
   <div id="selectBox">
     <h1> Pick an energy source</h1>
     <select id="mySelect">
-      <option value="to">Total Energy Produced</option>
-      <option value="co">Coal</option>
-      <option value="cr">Crude Oil</option>
-      <option value="na">Natural Gas</option>
-      <option value="tr">Total Renewable Energy</option>
-      <option value="or">Non-Biofuel Renewable Energy</option>
-      <option value="bi">Biofuels</option>
-      <option value="nu">Nuclear Power</option>
+      <option value="00">2000</option>
+      <option value="10">2010</option>
+      <option value="13">2013</option>
+      <option value="20">2020</option>
+      <option value="30">2030</option>
+      <option value="50">2050</option>
     </select>
     <div id="totalDiv">
       <h2></h2>
       <h3></h3>
     </div>
-  </div>  
+  </div>
+  <div id='legend-content'>
+    <div class='my-legend'>
+      <div class='legend-title'>Select a Year</div>
+      <div class='legend-scale'>
+        <ul class='legend-labels'>
+                <!-- <li><span style='background:#d73619;'></span>Most Favorable</li>
+                <li><span style='background:#F79E02;'></span></li>
+                <li><span style='background:#C86628;'></span></li>
+                <li><span style='background:#992E4F;'></span></li>
+                <li><span style='background:#792E4F;'></span>Least Favorable</li>
+                <li><span style='background:#5A2E4F;'></span>N/A*</li>      -->
+          <li data-year="00" class="year active"><span>2000</span></li>
+          <li data-year="10" class="year "><span>2010</span></li>
+          <li data-year="13" class="year "><span>2013</span></li>
+          <li data-year="20" class="year "><span>2020</span></li>
+          <li data-year="30" class="year "><span>2030</span></li>
+          <li data-year="50" class="year "><span>2050</span></li>
+        </ul>           
+        <ul class='legend-labels'>
+                <!-- <li><span style='background:#d73619;'></span>Most Favorable</li>
+                <li><span style='background:#F79E02;'></span></li>
+                <li><span style='background:#C86628;'></span></li>
+                <li><span style='background:#992E4F;'></span></li>
+                <li><span style='background:#792E4F;'></span>Least Favorable</li>
+                <li><span style='background:#5A2E4F;'></span>N/A*</li>      -->
+          <!-- <li class="buttonsi"><span class="rw2"><img src="img/mediaButtons_rewind.png"></span></li> -->
+          <li class="buttonsi"><span class="rpt2"><img src="img/mediaButtons_redo.png"></span></li>
+          <!-- <li class="buttonsi"><span class="ff2"><img src="img/mediaButtons_ff.png"></span></li>           -->
+        </ul>           
+
+      </div>
+      <!-- <div class='legend-source'>Source: <a href="#link to source">Name of source</a></div> -->
+    </div>
+  </div>
+
   <div id="master_container">
 
   	<svg id="map_container"></svg>
