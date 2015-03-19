@@ -31,7 +31,7 @@ var imgHeight = 50;
 
 // load some data
 // d3.json("/sites/prod/files/us_93_02_v3.json", function(error, us) {
-d3.json("js/wind_vision_v9.json", function(error, us) {
+d3.json("js/wind_vision_v10.json", function(error, us) {
 	if (error) return console.error(error);
 
 	var TheData = topojson.feature(us, us.objects.us_10m).features		
@@ -43,7 +43,6 @@ d3.json("js/wind_vision_v9.json", function(error, us) {
 				$('.rpt2 span img').attr('src', 'img/mediaButtons_play.png');				
 				m-=1;
 			};
-
 			clearInterval(play);
 			var width = parseInt(d3.select("#master_container").style("width"));
 			$('.year').removeClass('active');
@@ -274,32 +273,13 @@ function pause() {
 			var barWidth = w - margin - boxSegment;
 			var barPoint = margin + ((barWidth / num)*i)
 
-		// svg
-		// 	// .append("g")
-	 //      .append("path")
-	 //      .attr("d", d3.svg.symbol().type("triangle-up"))
-	 //     	.attr("id", "slideTriangle")
-	 //      .attr("class", "sly")
-	 //      .attr("transform", function() { 
-		//         return "translate("+ (barPoint + 1) +",24)"; })
-	 //        .attr("width", 45)
-	 //        .attr("height", 20);	      	        
-  //     // .attr("d", d3.svg.symbol().type("triangle-up"))
-
-		// svg
-	 //      .append("text")
-	 //      .attr("class","tip-text sly")
-	 //      .text(function(d){
-	 //          return i + 1993         
-	 //      })
-	 //      .attr("transform", function() { 
-	 //        return "translate("+ barPoint +",43)"; });	
-
 		} //end bubbles function
 
 	// create the tooltip
-	function tooltip(d) {         
-		var gotype = $("select").val()
+	function tooltip(d) {        
+		console.log(d) 
+
+		var gotype = $('.active').attr('data-year');
 
 		     if (gotype == "00") { var k = 0; var gotypename = "2000"} 
 		else if (gotype == "10") { var k = 1; var gotypename = "2010"} 
@@ -310,32 +290,36 @@ function pause() {
 		else { var k = 0; var gotypename = "fart"}
 
 		var type = typeArray[k]
-
+		console.log(type)
 		// grab the width to define breakpoints
 		width = parseInt(d3.select("#master_container").style("width"))
 
 		// Remove everything and start over.
     d3.selectAll(".tool").remove();
-
     
-
 // store the data
 	var data = d;
-    if (this.className.animVal != "bubble" ) {
-    	centroid = [(this.transform.animVal[0].matrix.e), (this.transform.animVal[0].matrix.f)]    	
-    	toolName = this.innerHTML;
-    	if (toolName === "Gulf of Mexico") {
-    		j = 0;
-    	}
-    	else if (toolName === "Pacific") {
-   			j = 1;
-    	};    	
-    	raw = offshore[j][type] / 1000;
-    } else {
-    	centroid = path.centroid(data);
-    	toolName = data.properties.name;       
-    	raw = data.properties[type]    
-    };
+
+    centroid = path.centroid(data);
+	toolName = data.properties.name;       
+	landbased = data.properties[type[0]];    
+	offshore = data.properties[type[1]];    
+
+    // if (this.className.animVal != "bubble" ) {
+    // 	centroid = [(this.transform.animVal[0].matrix.e), (this.transform.animVal[0].matrix.f)]    	
+    // 	toolName = this.innerHTML;
+    // 	if (toolName === "Gulf of Mexico") {
+    // 		j = 0;
+    // 	}
+    // 	else if (toolName === "Pacific") {
+   	// 		j = 1;
+    // 	};    	
+    // 	raw = offshore[j][type] / 1000;
+    // } else {
+    // 	centroid = path.centroid(data);
+    // 	toolName = data.id;       
+    // 	raw = data.properties[type]    
+    // };
    
     // where it hangs based on view size
     if (width > 900) {
@@ -402,15 +386,14 @@ function pause() {
 
     toolbody.append("tspan")
       .text(function(d){
-        return gotypename + ":";
+        return "Land Based: " + landbased + " GW";
       })
       .attr("x",0)
       .attr("y",0);
 
     toolbody.append("tspan")
-      .text(function(d){
-               
-        return raw + " Trillion Btu";
+      .text(function(d){              
+        return "Offshore: " + offshore + " GW";
       })
       .attr("x",0)
       .attr("y",15);
@@ -425,7 +408,7 @@ function pause() {
         .text("X").on("click", function(){
         	d3.selectAll(".tool").remove();
         });
-	}
+	} //end tooltip function
 
 		// begin looping stuff
 		var num	= 6; //number of iterations, i.e. years		
