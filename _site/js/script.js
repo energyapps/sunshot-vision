@@ -49,8 +49,8 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 			$(this).addClass('active');
 			i =  Number($(this).attr("idnum"));
 			BuildBubbles(width);
-			console.log("you selected the year, at index: " + i)
-			console.log("this is m: " + m)
+			// console.log("you selected the year, at index: " + i)
+			// console.log("this is m: " + m)
 		});	
 
 function pause() {
@@ -65,15 +65,15 @@ function pause() {
 				m-=1;
 				// play = setInterval(mechanic,1000);
 				clearInterval(play);	
-				console.log('you cleared the interval in "pause"')
+				// console.log('you cleared the interval in "pause"')
 			} else {
-				console.log('end of loop and rebiginng')
+				// console.log('end of loop and rebiginng')
 				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png'); //restart at the beginning??
 				i = 0;
 				play = setInterval(mechanic,1000);	
 				// here i want to reset the variables to i=0 m=0
 			}		
-			console.log('you hit pause at: ' + i)		
+			// console.log('you hit pause at: ' + i)		
 		}
 
 		var data2 = topojson.feature(us, us.objects.us_10m).features
@@ -225,14 +225,14 @@ function pause() {
 
 		// This is a loop
 			svg.selectAll("circle.bubble")
-	  		.data(topojson.feature(us, us.objects.us_10m).features)
-	  		  // .sort(function(a, b) { 
-	  		  // 	var raw1 = Number(a.properties[type[0]]) + Number(a.properties[type[1]])
-	  		  // 	var raw2 = Number(b.properties[type[0]]) + Number(b.properties[type[1]])
-	  		  // 	console.log(raw1);
-	  		  // 	console.log(raw2);
+	  		.data(topojson.feature(us, us.objects.us_10m).features
+	  		  .sort(function(a, b) { 
+	  		  	var raw1 = Number(a.properties[type[0]]) + Number(a.properties[type[1]])
+	  		  	var raw2 = Number(b.properties[type[0]]) + Number(b.properties[type[1]])
+	  		  	console.log(raw1);
+	  		  	console.log(raw2);
 	  		  	// return b.properties.total - a.properties.total;
-	  		  	// return raw1 - raw2; }))     
+	  		  	return raw2 - raw1; }))     
 		      .attr("transform", function(d) { 
 		        return "translate(" + path.centroid(d) + ")"; })
 		      .attr("r", function(d) { 		
@@ -259,7 +259,7 @@ function pause() {
 
 	// create the tooltip
 	function tooltip(d) {        
-		console.log(d) 
+		// console.log(d) 
 
 		var gotype = $('.active').attr('data-year');
 
@@ -272,7 +272,7 @@ function pause() {
 		else { var k = 0; var gotypename = "fart"}
 
 		var type = typeArray[k]
-		console.log(type)
+		// console.log(type)
 		// grab the width to define breakpoints
 		width = parseInt(d3.select("#master_container").style("width"))
 
@@ -406,15 +406,15 @@ function pause() {
 				m-=1;
 				// play = setInterval(mechanic,1000);
 				clearInterval(play);	
-				console.log('you cleared the interval in "pause"')
+				// console.log('you cleared the interval in "pause"')
 			} else {
-				console.log('end of loop and rebiginng')
+				// console.log('end of loop and rebiginng')
 				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png'); //restart at the beginning??
 				i = 0;
 				play = setInterval(mechanic,1000);	
 				// here i want to reset the variables to i=0 m=0
 			}		
-			console.log('you hit pause at: ' + i)		
+			// console.log('you hit pause at: ' + i)		
 		}
 
 		// what to do each iteration
@@ -424,10 +424,8 @@ function pause() {
 			if (i === num) {							
 				$('.rpt2 span img').attr('src', 'img/mediaButtons_redo.png');				
 				clearInterval(play);		 
-				console.log('you cleared the interval by reaching the end of mechanic')
-			}							
-			
-
+				// console.log('you cleared the interval by reaching the end of mechanic')
+			}									
 		}
 
 		function rebuildLoop(i) {			
@@ -453,7 +451,7 @@ function pause() {
 			// $(this).addClass('active');
 			BuildBubbles(width);
 
-			console.log('rebuildloop is at: ' + i)
+			// console.log('rebuildloop is at: ' + i)
 			// BuildBubbles(width, type)
 		}
 		
