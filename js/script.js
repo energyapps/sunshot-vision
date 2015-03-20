@@ -229,9 +229,8 @@ function pause() {
 	  		  .sort(function(a, b) { 
 	  		  	var raw1 = Number(a.properties[type[0]]) + Number(a.properties[type[1]])
 	  		  	var raw2 = Number(b.properties[type[0]]) + Number(b.properties[type[1]])
-	  		  	console.log(raw1);
-	  		  	console.log(raw2);
-	  		  	// return b.properties.total - a.properties.total;
+	  		  	// console.log(raw1);
+	  		  	// console.log(raw2);
 	  		  	return raw2 - raw1; }))     
 		      .attr("transform", function(d) { 
 		        return "translate(" + path.centroid(d) + ")"; })
