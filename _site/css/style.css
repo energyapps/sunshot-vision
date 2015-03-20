@@ -388,5 +388,36 @@ cursor: pointer;
  }
 }
 
+@media (max-width:400px){
+  /********************************
+  Legend
+  ********************************/
 
+  .my-legend .legend-title {
+    font-size: 12px;
+    padding-top: 5px;
+    padding-left: 6px;
+  }
+
+  .my-legend .legend-scale ul {
+    padding-left: 5px;
+  }
+
+  .my-legend .legend-scale ul li {
+    width: 40px;  
+    font-size: 13px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+
+  .my-legend .legend-scale ul li img {
+    padding-top: 4px;
+    height: 16px;
+  }
+
+  .buttonsi {
+    padding: 0 !important;
+  }
+
+}
 
