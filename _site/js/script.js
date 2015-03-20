@@ -214,10 +214,7 @@ function pause() {
 		else if (gotype == "13") { var k = 2; var gotypename = "2013"} 
 		else if (gotype == "20") { var k = 3; var gotypename = "2020"} 
 		else if (gotype == "30") { var k = 4; var gotypename = "2030"} 
-		else if (gotype == "50") { var k = 5; var gotypename = "2050"} 
-		else { var k = 0; var gotypename = "fart"}
-
-// need to add in Biofuels
+		else if (gotype == "50") { var k = 5; var gotypename = "2050"};
 
 			var type = typeArray[k]
 
@@ -228,7 +225,14 @@ function pause() {
 
 		// This is a loop
 			svg.selectAll("circle.bubble")
-	  		.data(topojson.feature(us, us.objects.us_10m).features)	        
+	  		.data(topojson.feature(us, us.objects.us_10m).features)
+	  		  // .sort(function(a, b) { 
+	  		  // 	var raw1 = Number(a.properties[type[0]]) + Number(a.properties[type[1]])
+	  		  // 	var raw2 = Number(b.properties[type[0]]) + Number(b.properties[type[1]])
+	  		  // 	console.log(raw1);
+	  		  // 	console.log(raw2);
+	  		  	// return b.properties.total - a.properties.total;
+	  		  	// return raw1 - raw2; }))     
 		      .attr("transform", function(d) { 
 		        return "translate(" + path.centroid(d) + ")"; })
 		      .attr("r", function(d) { 		
