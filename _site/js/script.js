@@ -76,9 +76,6 @@ function pause() {
 			console.log('you hit pause at: ' + i)		
 		}
 
-
-
-
 		var data2 = topojson.feature(us, us.objects.us_10m).features
 
 		var typeArray = [[],[],[],[],[],[]];
@@ -174,10 +171,6 @@ function pause() {
 	      .attr("dy", "1.3em")
 	      .text(d3.format(".1s"));
 
-	    // legend.append("text")
-	    //     .text("Btu")
-	    //     .attr("transform", "translate(" + (width - (radius2(10000) + 10)) + "," + (height - 10) + ")");      			
-
 			var lgspot = [(path.centroid(TheData[29])[0] + (width / 7)),(path.centroid(TheData[29])[1] + (width / 20))] //using louisiana as reference
 
 			legend        
@@ -228,22 +221,10 @@ function pause() {
 
 			var type = typeArray[k]
 
-			// d3.selectAll(".sly").remove();
-
-			// var USA = "100"
-
-			// // Redo the header info
-			// totalDiv.innerHTML = '<h2>' + gotypename + '</h2><h3>' + USA + ' Trillion BTU</h3>'
-
 			// redifine the radius of circles
 			var radius = d3.scale.sqrt()  
 				.domain([0, 5])
 				.range([(2), (w / 45)]); 
-
-      // var data_array = [        
-      //   {type: "Coal", value: data.properties.coal, x:centroid_adjusted[0], y:centroid_adjusted[1]},
-      //   {type: "Crude", value: data.properties.crude, x:centroid_adjusted[0], y:centroid_adjusted[1]}
-      //   ]
 
 		// This is a loop
 			svg.selectAll("circle.bubble")
@@ -251,10 +232,7 @@ function pause() {
 		      .attr("transform", function(d) { 
 		        return "translate(" + path.centroid(d) + ")"; })
 		      .attr("r", function(d) { 		
-		      	// var raw = d.properties[type]
 		      	var raw = Number(d.properties[type[0]]) + Number(d.properties[type[1]])
-		      	// var raw = Number(d.properties[type[0]]);
-		      	// var raw = Number(d.properties[type[1]])
 
 		      	// We exclude all numbers smaller than 0.1 GW!
 		      	if (raw < 0.1) {
@@ -304,22 +282,6 @@ function pause() {
 	toolName = data.properties.name;       
 	landbased = data.properties[type[0]];    
 	offshore = data.properties[type[1]];    
-
-    // if (this.className.animVal != "bubble" ) {
-    // 	centroid = [(this.transform.animVal[0].matrix.e), (this.transform.animVal[0].matrix.f)]    	
-    // 	toolName = this.innerHTML;
-    // 	if (toolName === "Gulf of Mexico") {
-    // 		j = 0;
-    // 	}
-    // 	else if (toolName === "Pacific") {
-   	// 		j = 1;
-    // 	};    	
-    // 	raw = offshore[j][type] / 1000;
-    // } else {
-    // 	centroid = path.centroid(data);
-    // 	toolName = data.id;       
-    // 	raw = data.properties[type]    
-    // };
    
     // where it hangs based on view size
     if (width > 900) {
@@ -413,7 +375,6 @@ function pause() {
 		// begin looping stuff
 		var num	= 6; //number of iterations, i.e. years		
 		var i = 1; // which year you are on when you start 
-		// var k = 1; // which type of data you are looking at (total vs crude, etc)
 		var play;
 
 		var m=0;
@@ -492,11 +453,8 @@ function pause() {
 			// BuildBubbles(width, type)
 		}
 		
-		// initial run
+	  // initial run
 	  resize(); 	    		  
-
-	  // start looping
-	  // start(); 
 
 	  d3.select(window).on('resize', resize); 
 	  d3.selectAll("circle.bubble").on('click', tooltip);
@@ -512,7 +470,3 @@ function pause() {
 
 }); //end states.json
 		}(jQuery));  
-
-// var start1 = new Date().getTime()			
-			// var elapsed = new Date().getTime() - start1;
-			// console.log(elapsed)			
