@@ -1,17 +1,22 @@
+.green {
+  color: green;
+}
+
 /********************************
 Legend
 ********************************/
 #legend-content {
   position: relative;
-  width: 100%;
-  height: 80px;
+  width: 50%;
+  height: 60px;
   background-color: rgb(221,221,221);
+  float: left;
 }
 
 .my-legend .legend-title {
   text-align: left;
   font-size: 14px;
-  padding-top: 10px;
+  padding-top: 5px;
   /*float: right;*/
   color: #444;
   font-family:'Avenir LT W02 35 Light';
@@ -93,6 +98,10 @@ Legend
   width: 100%;
 }
 
+#dis1 {
+  background-color: rgb(221,221,221);
+}
+
  #dis1  h1,  #dis1 h2,  #dis1 h3,  #dis1 h4, #dis1  p {
   border-bottom: none !important;
   color: #333;
@@ -163,6 +172,7 @@ Legend
   max-width: 1000px;
   overflow: visible;
   /*border: 1px solid black;*/
+  clear: both;
 }
 
 /*.axis path,
@@ -321,10 +331,18 @@ cursor: pointer;
   background-color: #ddd;
 }
 
+#totalDiv {
+  background-color: rgb(221,221,221);
+  float: right;
+  width: 50%;
+  height: 60px;
+  text-align: right;
+}
+
 #totalDiv h2 {
   font-size: 20px;
   padding-top: 5px;
-  padding-left: 5px;
+  padding-right: 5px;
   color: #333;
   line-height: 30px;
 }
@@ -332,7 +350,7 @@ cursor: pointer;
 #totalDiv h3 {
   font-size: 30px;
   padding-top: 5px;
-  padding-left: 5px;
+  padding-right: 5px;
   color: #333;
   line-height: 14px;
   margin: 0px;
@@ -340,6 +358,16 @@ cursor: pointer;
   border-bottom: none !important;
   margin-bottom: 0px !important;
 }
+
+#totalDiv h4 {
+  padding-top: 5px;
+  padding-right: 5px;
+  color: #333;
+    padding-bottom: 0px !important;
+  border-bottom: none !important;
+  margin-bottom: 0px !important;
+}
+  
 
 /*Repeater*/
 #repeater, #fastforward, #rewind {
@@ -354,6 +382,9 @@ cursor: pointer;
 @media (max-width:900px){
  #master_container { 
   padding-bottom:58% !important; 
+ }
+ #totalDiv, #legend-content {
+  width: 100%;
  }
 }
 
@@ -374,6 +405,22 @@ cursor: pointer;
   padding-bottom:55% !important; 
  }*/
  
+  #totalDiv h3 { 
+    font-size: 15px;
+    line-height: 100%;
+  }
+
+  #totalDiv h2 { 
+    font-size: 16px;
+    line-height: 100%;
+  }
+
+  #totalDiv h4 { 
+    font-size: 12px;
+    line-height: 4px;
+  }
+
+
  #pre_content h2 {
   font-size: 20px;
   padding-top: 5px;

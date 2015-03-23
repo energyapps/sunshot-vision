@@ -1,5 +1,5 @@
 var totalDiv = document.getElementById('totalDiv')
-	var boxWidth = 40;
+var boxWidth = 40;
 
 // Set some variables
 var width = parseInt(d3.select("#master_container").style("width")),
@@ -53,7 +53,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 			// console.log("this is m: " + m)
 		});	
 
-function pause() {
+		function pause() {
 
 			if (m === 0 && i != num) {				
 				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png');				
@@ -77,6 +77,23 @@ function pause() {
 		}
 
 		var data2 = topojson.feature(us, us.objects.us_10m).features
+		var totalArray = [0,0,0,0,0,0,0,0,0,0,0,0];
+		for (var i = 0; i  < data2.length; i++) { 
+			var data3 = data2[i].properties;
+
+			totalArray[0]  = Number(data3.Landbased2000) + Number(totalArray[0]) ;
+			totalArray[1]  = Number(data3.Offshore2000)  + Number(totalArray[1]) ;
+			totalArray[2]  = Number(data3.Landbased2010) + Number(totalArray[2]) ;
+			totalArray[3]  = Number(data3.Offshore2010)  + Number(totalArray[3]) ;
+			totalArray[4]  = Number(data3.Landbased2013) + Number(totalArray[4]) ;
+			totalArray[5]  = Number(data3.Offshore2013)  + Number(totalArray[5]) ;
+			totalArray[6]  = Number(data3.Landbased2020) + Number(totalArray[6]) ;
+			totalArray[7]  = Number(data3.Offshore2020)  + Number(totalArray[7]) ;
+			totalArray[8]  = Number(data3.Landbased2030) + Number(totalArray[8]) ;
+			totalArray[9]  = Number(data3.Offshore2030)  + Number(totalArray[9]) ;
+			totalArray[10] = Number(data3.Landbased2050) + Number(totalArray[10]);
+			totalArray[11] = Number(data3.Offshore2050)  + Number(totalArray[11]);
+		};
 
 		var typeArray = [[],[],[],[],[],[]];
 
@@ -209,15 +226,26 @@ function pause() {
 			//Set the new active category before the build, then you just rebuild the new one
 			var gotype = $('.active').attr('data-year');
 
-		     if (gotype == "00") { var k = 0; var gotypename = "2000"} 
-		else if (gotype == "10") { var k = 1; var gotypename = "2010"} 
-		else if (gotype == "13") { var k = 2; var gotypename = "2013"} 
-		else if (gotype == "20") { var k = 3; var gotypename = "2020"} 
-		else if (gotype == "30") { var k = 4; var gotypename = "2030"} 
-		else if (gotype == "50") { var k = 5; var gotypename = "2050"};
+		     if (gotype == "00") { var k = 0; var gotypename = "2000"; var statesnum = "4" ; var increase = 0; var prev_year = "2000"} 
+		else if (gotype == "10") { var k = 1; var gotypename = "2010"; var statesnum = "27"; var increase = 37.73; var prev_year = "2000"} 
+		else if (gotype == "13") { var k = 2; var gotypename = "2013"; var statesnum = "34"; var increase = 20.84; var prev_year = "2010"} 
+		else if (gotype == "20") { var k = 3; var gotypename = "2020"; var statesnum = "36"; var increase = 52.31; var prev_year = "2013"} 
+		else if (gotype == "30") { var k = 4; var gotypename = "2030"; var statesnum = "47"; var increase = 110.66; var prev_year = "2020"} 
+		else if (gotype == "50") { var k = 5; var gotypename = "2050"; var statesnum = "48"; var increase = 180.15; var prev_year = "2030"};
 
 			var type = typeArray[k]
 
+			// Redo the header info
+			var USA = Math.round((totalArray[(k*2)]+totalArray[(k*2 + 1)]) * 100) / 100;
+
+			if (gotypename === "2000") {
+				totalDiv.innerHTML = '<h2>Total Energy Produced in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3>';			
+			} else if (gotypename < 2014) {
+				totalDiv.innerHTML = '<h2>Total Energy Produced in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';			
+			} else {
+				totalDiv.innerHTML = '<h2>Total Energy Projected in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';		
+			};
+			
 			// redifine the radius of circles
 			var radius = d3.scale.sqrt()  
 				.domain([0, 5])
@@ -358,10 +386,26 @@ function pause() {
 
     toolbody.append("tspan")
       .text(function(d){              
+        return "+X GW from 2000";
+      })
+      .attr("fill","rgb(140,198,63)")
+      .attr("x",0)
+      .attr("y",15);
+
+    toolbody.append("tspan")
+      .text(function(d){              
         return "Offshore: " + offshore + " GW";
       })
       .attr("x",0)
-      .attr("y",15);
+      .attr("y",30);
+
+    toolbody.append("tspan")
+      .text(function(d){              
+        return "+" + " GW from 2000";
+      })
+      .attr("fill","rgb(140,198,63)")
+      .attr("x",0)
+      .attr("y",45);
 
     svg.append("g")
       .attr("class", "closer tool")
