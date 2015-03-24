@@ -27,7 +27,36 @@ var legend = svg.append("g")
 var imgWidth = 50;
 var imgHeight = 50;
 
+// Pie chart parameters //first 4 colors are bluish and fossil/nuclear, last two are renewable. Add a diff for nuclear, tweak??
+var color = d3.scale.ordinal()
+    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c"]);
+
+// var radiusPie = 60;
+var arc = d3.svg.arc()
+    .outerRadius(function(d){    	
+    	
+    		console.log(d)
+      	var x = Number(d.data.value) + Number(d.data.other)
+      	console.log(x);
+      	console.log(Number(d.data.other))
+        return radius(x); 
+    })
+    .innerRadius(0);
+
+var pie = d3.layout.pie()
+    .sort(null)
+    .value(function(d){   
+      if (d.value > 0.1) {
+        return Number(d.value);
+      } else	{
+      	// return 0;
+      };
+      //Trying to figure out a way to prune results.
+    });
+
+
 (function ($) { 
+
 
 // load some data
 // d3.json("/sites/prod/files/us_93_02_v3.json", function(error, us) {
@@ -221,7 +250,8 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 
 		function BuildBubbles(w, type) {		
 
-			// var gotype = $(this).attr('data-year');
+			d3.selectAll(".arc").remove();
+			d3.select("#piebox").remove();
 			
 			//Set the new active category before the build, then you just rebuild the new one
 			var gotype = $('.active').attr('data-year');
@@ -251,6 +281,52 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 				.domain([0, 5])
 				.range([(2), (w / 45)]); 
 
+			//add a general box to add the pies into
+			var piebox = svg
+      .append("g")
+      .attr("id","piebox");    
+				
+				for (var i = 0; i < data2.length; i++) {					
+					centroidPie = path.centroid(data2[i]);
+					if (data2[i].properties[type[0]] < 0.1 && data2[i].properties[type[1]] < 0.1) {
+						data_array = [];
+					} else if (data2[i].properties[type[0]] < 0.1) {
+						var data_array = [
+	        		{type: "Offshore", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
+						];
+					} else if (data2[i].properties[type[0]] < 0.1)  {
+						var data_array = [
+							{type: "Land Based", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]}
+						];
+					} else {
+						var data_array = [
+							// {name: data2[i].properties.name, id: "id"+i},
+							{type: "Land Based", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]},
+	        		{type: "Offshore", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
+						];
+					};
+					
+					// console.log(data_array)
+
+					//Build the pie in D3 create a pie box for this particular state's pie
+					thisPie = piebox.append("g")
+
+					//Add this pie to the above
+					var g = thisPie.selectAll(".arc" )
+          .data(pie(data_array))
+        		.enter().append("g")        		
+	          .attr("class", "arc")
+	          .attr("transform", function() { 
+          		return "translate(" + path.centroid(data2[i]) + ")"; 
+        		})
+					
+					g.append("path")
+	        .attr("d", arc)
+	        // .style("fill", function(d) { return color(d.data.type); });
+	        .style("fill", function(d) { return color(d.data.type); });
+
+				};
+
 		// This is a loop
 			svg.selectAll("circle.bubble")
 	  		.data(topojson.feature(us, us.objects.us_10m).features
@@ -264,6 +340,9 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		        return "translate(" + path.centroid(d) + ")"; })
 		      .attr("r", function(d) { 		
 		      	var raw = Number(d.properties[type[0]]) + Number(d.properties[type[1]])
+
+		      	// console.log(type[0] + ': ' + d.properties[type[0]])
+
 
 		      	// We exclude all numbers smaller than 0.1 GW!
 		      	if (raw < 0.1) {
