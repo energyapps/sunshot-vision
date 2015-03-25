@@ -35,10 +35,10 @@ var color = d3.scale.ordinal()
 var arc = d3.svg.arc()
     .outerRadius(function(d){    	
     	
-    		console.log(d)
+    		// console.log(d)
       	var x = Number(d.data.value) + Number(d.data.other)
-      	console.log(x);
-      	console.log(Number(d.data.other))
+      	// console.log(x);
+      	// console.log(Number(d.data.other))
         return radius(x); 
     })
     .innerRadius(0);
@@ -105,7 +105,15 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 			// console.log('you hit pause at: ' + i)		
 		}
 
+// preload the data and sort it for year 2050
 		var data2 = topojson.feature(us, us.objects.us_10m).features
+		.sort(function(a, b) { 
+			// return b.properties.Landbased2050 - a.properties.Landbased2050; 
+			var raw1 = Number(a.properties.Landbased2050) + Number(a.properties.Offshore2050)
+	  	var raw2 = Number(b.properties.Landbased2050) + Number(b.properties.Offshore2050)
+			return raw2 - raw1; 
+		});
+
 		var totalArray = [0,0,0,0,0,0,0,0,0,0,0,0];
 		for (var i = 0; i  < data2.length; i++) { 
 			var data3 = data2[i].properties;
@@ -148,25 +156,25 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 	 		};
 	 	}
 
-		//build a map outside of resize
-		svg.selectAll(".state")
-	    .data(topojson.feature(us, us.objects.us_10m).features)
-	    .enter().append("path")
-	      .attr("class", function(d) {return "state " + d.id; });
+		// //build a map outside of resize
+		// svg.selectAll(".state")
+	 //    .data(topojson.feature(us, us.objects.us_10m).features)
+	 //    .enter().append("path")
+	 //      .attr("class", function(d) {return "state " + d.id; });
 
-	      //this is building of the USA shape
-		svg.append("path")
-	    .datum(topojson.mesh(us, us.objects.us_10m, function(a,b) {return a !== b;}))
-	    .attr("class", "state-boundary");
+	 //      //this is building of the USA shape
+		// svg.append("path")
+	 //    .datum(topojson.mesh(us, us.objects.us_10m, function(a,b) {return a !== b;}))
+	 //    .attr("class", "state-boundary");
 
-		var bubblediv = svg.append("g")
-			.attr("class", "bubbles")
+		// var bubblediv = svg.append("g")
+		// 	.attr("class", "bubbles")
 
-	      //build the bubbles for all data
-		bubblediv.selectAll("circle")
-			.data(topojson.feature(us, us.objects.us_10m).features)
-			.enter().append("circle")
-			.attr("class", "bubble")   	
+	 //      //build the bubbles for all data
+		// bubblediv.selectAll("circle")
+		// 	.data(topojson.feature(us, us.objects.us_10m).features)
+		// 	.enter().append("circle")
+		// 	.attr("class", "bubble")   	
 
 		// Resize function
 		function resize() {			
@@ -250,6 +258,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 
 		function BuildBubbles(w, type) {		
 
+			// remove the pies for next build
 			d3.selectAll(".arc").remove();
 			d3.select("#piebox").remove();
 			
@@ -328,29 +337,29 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 				};
 
 		// This is a loop
-			svg.selectAll("circle.bubble")
-	  		.data(topojson.feature(us, us.objects.us_10m).features
-	  		  .sort(function(a, b) { 
-	  		  	var raw1 = Number(a.properties[type[0]]) + Number(a.properties[type[1]])
-	  		  	var raw2 = Number(b.properties[type[0]]) + Number(b.properties[type[1]])
-	  		  	// console.log(raw1);
-	  		  	// console.log(raw2);
-	  		  	return raw2 - raw1; }))     
-		      .attr("transform", function(d) { 
-		        return "translate(" + path.centroid(d) + ")"; })
-		      .attr("r", function(d) { 		
-		      	var raw = Number(d.properties[type[0]]) + Number(d.properties[type[1]])
+			// svg.selectAll("circle.bubble")
+	  // 		.data(topojson.feature(us, us.objects.us_10m).features
+	  // 		  .sort(function(a, b) { 
+	  // 		  	var raw1 = Number(a.properties[type[0]]) + Number(a.properties[type[1]])
+	  // 		  	var raw2 = Number(b.properties[type[0]]) + Number(b.properties[type[1]])
+	  // 		  	// console.log(raw1);
+	  // 		  	// console.log(raw2);
+	  // 		  	return raw2 - raw1; }))     
+		 //      .attr("transform", function(d) { 
+		 //        return "translate(" + path.centroid(d) + ")"; })
+		 //      .attr("r", function(d) { 		
+		 //      	var raw = Number(d.properties[type[0]]) + Number(d.properties[type[1]])
 
-		      	// console.log(type[0] + ': ' + d.properties[type[0]])
+		 //      	// console.log(type[0] + ': ' + d.properties[type[0]])
 
 
-		      	// We exclude all numbers smaller than 0.1 GW!
-		      	if (raw < 0.1) {
-		      	} else {
-		      		return radius(raw);
-		      	};						        
-		      })
-		      .attr("text", function(d){ return d.properties.id});		
+		 //      	// We exclude all numbers smaller than 0.1 GW!
+		 //      	if (raw < 0.1) {
+		 //      	} else {
+		 //      		return radius(raw);
+		 //      	};						        
+		 //      })
+		 //      .attr("text", function(d){ return d.properties.id});		
 
 			var margin	= w / 20;
 			// var barWidth = w - margin*2 - 50;
@@ -581,7 +590,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 	  resize(); 	    		  
 
 	  d3.select(window).on('resize', resize); 
-	  d3.selectAll("circle.bubble").on('click', tooltip);
+	  // d3.selectAll("circle.bubble").on('click', tooltip);
 	  $('.rpt2').click(function(e) {
 	  	pause();
 	  });
