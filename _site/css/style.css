@@ -1,5 +1,5 @@
 .green {
-  color: green;
+  color: #19A9E2;
 }
 
 /********************************
@@ -51,17 +51,17 @@ Legend
   border-bottom: 1px solid #fff;
   border-top: 1px solid #fff;
   cursor: pointer;
-  transition: background-color 300ms ease-out;
+  /*transition: background-color 100ms ease-out;*/
   }
 
 .my-legend .legend-scale ul li:hover {
-  background-color: rgb(197,225,159);
-  transition: background-color 300ms ease-out;
+  background-color: rgb(184,223,101);
+  /*transition: background-color 100ms ease-out;*/
 }
 
 .my-legend .legend-scale ul li.active {
-  background-color: rgb(197,225,159);
-  transition: background-color 300ms ease-out;
+  background-color: rgb(184,223,101);
+  /*transition: background-color 100ms ease-out;*/
 }
 
 .my-legend .legend-scale ul li:last-child {
@@ -306,7 +306,7 @@ cursor: pointer;
 }
 
 .arc {
-  /*fill-opacity: 0.8;*/
+  fill-opacity: 0.6;
 }
 
 .arc path {

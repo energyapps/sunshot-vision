@@ -27,32 +27,34 @@ var legend = svg.append("g")
 var imgWidth = 50;
 var imgHeight = 50;
 
-// Pie chart parameters //first 4 colors are bluish and fossil/nuclear, last two are renewable. Add a diff for nuclear, tweak??
+// Pie chart colors 
 var color = d3.scale.ordinal()
-    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c"]);
+    .range(["#8BCC00", "#19A9E2"]);
+// Tomato FF6347
+// Neon Blue 00eeee
+// DOE pink E7227E
+// DOE light blue 226 19A9E2
+// DOE Green 8BCC00
 
-// var radiusPie = 60;
+
+// Other Pie chart parameters
 var arc = d3.svg.arc()
-    .outerRadius(function(d){    	
-    	
-    		// console.log(d)
-      	var x = Number(d.data.value) + Number(d.data.other)
-      	// console.log(x);
-      	// console.log(Number(d.data.other))
-        return radius(x); 
-    })
-    .innerRadius(0);
+  .outerRadius(function(d){    	
+    	var x = Number(d.data.value) + Number(d.data.other)
+      return radius(x); 
+  })
+  .innerRadius(0);
 
 var pie = d3.layout.pie()
-    .sort(null)
-    .value(function(d){   
-      if (d.value > 0.1) {
-        return Number(d.value);
-      } else	{
-      	// return 0;
-      };
-      //Trying to figure out a way to prune results.
-    });
+  .sort(null)
+  .value(function(d){   
+    if (d.value >= 0.1) {
+      return Number(d.value);
+    } else	{
+    	// return 0;
+    };
+    //Trying to figure out a way to prune results.
+  });
 
 
 (function ($) { 
@@ -156,7 +158,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 	 		};
 	 	}
 
-		// //build a map outside of resize
+		//build a map outside of resize
 		// svg.selectAll(".state")
 	 //    .data(topojson.feature(us, us.objects.us_10m).features)
 	 //    .enter().append("path")
@@ -166,6 +168,9 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		// svg.append("path")
 	 //    .datum(topojson.mesh(us, us.objects.us_10m, function(a,b) {return a !== b;}))
 	 //    .attr("class", "state-boundary");
+
+// build the bubbles/pies outside of the loop so that when you rebuild, 
+// you are replacing the existing, not creating all new
 
 		// var bubblediv = svg.append("g")
 		// 	.attr("class", "bubbles")
@@ -218,6 +223,13 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 				.domain([0, 5])
 				.range([(2), (width / 45)]); 
 
+			var arc = d3.svg.arc()
+			  .outerRadius(function(d){    	
+			    	var x = Number(d.data.value) + Number(d.data.other)
+			      return radius(x); 
+			  })
+			  .innerRadius(0);
+
 			// create the legend
 			legend.append("circle")
 
@@ -258,8 +270,9 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 
 		function BuildBubbles(w, type) {		
 
-			// remove the pies for next build
+			// remove the pies and tools for next build
 			d3.selectAll(".arc").remove();
+			d3.selectAll(".tool").remove();
 			d3.select("#piebox").remove();
 			
 			//Set the new active category before the build, then you just rebuild the new one
@@ -289,6 +302,13 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 			var radius = d3.scale.sqrt()  
 				.domain([0, 5])
 				.range([(2), (w / 45)]); 
+
+			var arc = d3.svg.arc()
+			  .outerRadius(function(d){    	
+			    	var x = Number(d.data.value) + Number(d.data.other)
+			      return radius(x); 
+			  })
+			  .innerRadius(0);
 
 			//add a general box to add the pies into
 			var piebox = svg
@@ -328,10 +348,10 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 	          .attr("transform", function() { 
           		return "translate(" + path.centroid(data2[i]) + ")"; 
         		})
+        		.on("click", arctip);
 					
 					g.append("path")
 	        .attr("d", arc)
-	        // .style("fill", function(d) { return color(d.data.type); });
 	        .style("fill", function(d) { return color(d.data.type); });
 
 				};
@@ -373,35 +393,21 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		} //end bubbles function
 
 	// create the tooltip
-	function tooltip(d) {        
-		// console.log(d) 
+	function arctip(d) {     
 
-		var gotype = $('.active').attr('data-year');
-
-		     if (gotype == "00") { var k = 0; var gotypename = "2000"} 
-		else if (gotype == "10") { var k = 1; var gotypename = "2010"} 
-		else if (gotype == "13") { var k = 2; var gotypename = "2013"} 
-		else if (gotype == "20") { var k = 3; var gotypename = "2020"} 
-		else if (gotype == "30") { var k = 4; var gotypename = "2030"} 
-		else if (gotype == "50") { var k = 5; var gotypename = "2050"} 
-		else { var k = 0; var gotypename = "fart"}
-
-		var type = typeArray[k]
-		// console.log(type)
 		// grab the width to define breakpoints
 		width = parseInt(d3.select("#master_container").style("width"))
 
 		// Remove everything and start over.
     d3.selectAll(".tool").remove();
-    
-// store the data
-	var data = d;
+	    
+	  centroid = [(d.data.x),(d.data.y)];
 
-    centroid = path.centroid(data);
-	toolName = data.properties.name;       
-	landbased = data.properties[type[0]];    
-	offshore = data.properties[type[1]];    
-   
+		toolName = d.data.name;       
+		valuetip = Number(d.value);
+		other = Number(d.data.other);
+	  typetip = d.data.type
+
     // where it hangs based on view size
     if (width > 900) {
       if (centroid[1] < 250) {
@@ -445,7 +451,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
         .attr("transform", function() { 
           return "translate(" + centroid_adjusted + ")"; })
         .attr("width", (170))
-        .attr("height", (55))
+        .attr("height", (58))
         .attr("rx", 6)
         .attr("ry", 6)
   	
@@ -467,33 +473,33 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 
     toolbody.append("tspan")
       .text(function(d){
-        return "Land Based: " + landbased + " GW";
+        return "Total: " + (valuetip+other) + " GW";
       })
       .attr("x",0)
       .attr("y",0);
 
     toolbody.append("tspan")
       .text(function(d){              
-        return "+X GW from 2000";
+        return typetip + ": " + valuetip + " GW";
       })
-      .attr("fill","rgb(140,198,63)")
+      .attr("fill", function(d){
+      	if (typetip === "Land Based") {
+      		return "#61AD00"
+      	} else{
+      		return "#19A9E2"
+      	};
+      		
+      })
       .attr("x",0)
       .attr("y",15);
 
-    toolbody.append("tspan")
-      .text(function(d){              
-        return "Offshore: " + offshore + " GW";
-      })
-      .attr("x",0)
-      .attr("y",30);
-
-    toolbody.append("tspan")
-      .text(function(d){              
-        return "+" + " GW from 2000";
-      })
-      .attr("fill","rgb(140,198,63)")
-      .attr("x",0)
-      .attr("y",45);
+    // toolbody.append("tspan")
+    //   .text(function(d){              
+    //     return "+X GW from 2000";
+    //   })
+    //   .attr("fill","#19A9E2")
+    //   .attr("x",0)
+    //   .attr("y",30);  
 
     svg.append("g")
       .attr("class", "closer tool")
@@ -502,7 +508,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
       })
         .append("text")
         .attr("class", "tip-text2 tool")
-        .text("X").on("click", function(){
+        .text("x").on("click", function(){
         	d3.selectAll(".tool").remove();
         });
 	} //end tooltip function
@@ -590,16 +596,46 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 	  resize(); 	    		  
 
 	  d3.select(window).on('resize', resize); 
-	  // d3.selectAll("circle.bubble").on('click', tooltip);
+	  // d3.selectAll("circle.bubble").on('mouseover', tooltip);
+	  // d3.selectAll("g.arc").on('click', arctip);      
 	  $('.rpt2').click(function(e) {
 	  	pause();
 	  });
+	  // Do something on keystroke of escape....escape == 27.
+	  $(document).keyup(function(e) {
+		  if (e.keyCode == 27) { 
+				d3.selectAll(".tool").remove();		  	
+		  }   
+		});
+		$(document).keydown(function(e) {
+    switch(e.which) {
+        case 37: // left
+        	console.log('left')
+        break;
+
+        case 38: // up
+	        console.log('up')
+        break;
+
+        case 39: // right
+        	console.log('right')
+        break;
+
+        case 40: // down
+        	console.log('down')
+        break;
+
+        default: return; // exit this handler for other keys
+    }
+    e.preventDefault(); // prevent the default action (scroll / move caret)
+});
 
 
 	  //function to add commas
 		function numberWithCommas(x) {
 		  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		}
-
 }); //end states.json
 		}(jQuery));  
+
+
