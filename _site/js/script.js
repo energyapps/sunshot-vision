@@ -24,6 +24,12 @@ var legend = svg.append("g")
 	.data([5, 20, 40])
 	.enter().append("g");
 
+var legend2 = svg.append("g")
+	.attr("class", "legend2")
+	.selectAll("g")
+	.data(["Land Based","Offshore"])
+	.enter().append("g")
+
 var imgWidth = 50;
 var imgHeight = 50;
 
@@ -36,7 +42,6 @@ var color = d3.scale.ordinal()
 // DOE light blue 226 19A9E2
 // DOE Green 8BCC00
 
-
 // Other Pie chart parameters
 var arc = d3.svg.arc()
   .outerRadius(function(d){    	
@@ -48,18 +53,11 @@ var arc = d3.svg.arc()
 var pie = d3.layout.pie()
   .sort(null)
   .value(function(d){   
-    if (d.value >= 0.1) {
       return Number(d.value);
-    } else	{
-    	// return 0;
-    };
-    //Trying to figure out a way to prune results.
   });
 
 
 (function ($) { 
-
-
 // load some data
 // d3.json("/sites/prod/files/us_93_02_v3.json", function(error, us) {
 d3.json("js/wind_vision_v10.json", function(error, us) {
@@ -159,15 +157,15 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 	 	}
 
 		//build a map outside of resize
-		// svg.selectAll(".state")
-	 //    .data(topojson.feature(us, us.objects.us_10m).features)
-	 //    .enter().append("path")
-	 //      .attr("class", function(d) {return "state " + d.id; });
+		svg.selectAll(".state")
+	    .data(topojson.feature(us, us.objects.us_10m).features)
+	    .enter().append("path")
+	      .attr("class", function(d) {return "state " + d.id; });
 
-	 //      //this is building of the USA shape
-		// svg.append("path")
-	 //    .datum(topojson.mesh(us, us.objects.us_10m, function(a,b) {return a !== b;}))
-	 //    .attr("class", "state-boundary");
+	      //this is building of the USA shape
+		svg.append("path")
+	    .datum(topojson.mesh(us, us.objects.us_10m, function(a,b) {return a !== b;}))
+	    .attr("class", "state-boundary");
 
 // build the bubbles/pies outside of the loop so that when you rebuild, 
 // you are replacing the existing, not creating all new
@@ -196,7 +194,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		  // Smaller viewport
 			if (width <= 800) {
 				projection
-					.scale(width * 1.2)
+					.scale(width * 1.05)
 					.translate([width / 2, ((height / 2) + 45)])             
 			} else if (width <= 900) {
 				projection
@@ -229,14 +227,22 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 			      return radius(x); 
 			  })
 			  .innerRadius(0);
+	    
+	    // resize paths of states
+			svg.selectAll('path.state')
+	    	.attr("d", path);
+
+	  	svg.selectAll('path.state-boundary')
+	  		.attr("d", path);
 
 			// create the legend
 			legend.append("circle")
 
 	    legend.append("text")
 	      .attr("dy", "1.3em")
-	      .text(d3.format(".1s"));
+	      .text(function(d){return d});
 
+	      // hang the legend based on louisiana's location
 			var lgspot = [(path.centroid(TheData[29])[0] + (width / 7)),(path.centroid(TheData[29])[1] + (width / 20))] //using louisiana as reference
 
 			legend        
@@ -253,20 +259,88 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 	    	.attr("class","lg")
 	      .attr("y", function(d) { return -2 * radius(d); }); 
 
-	    // resize paths of states
-			svg.selectAll('path.state')
-	    	.attr("d", path);
+      var legendText = svg.append("g")
+			.attr("class", "legendText lg")
+			.append("text")
+			.attr("dy", "1.3em")		  
+		  .attr("text-anchor","middle")
+		  .attr("fill","rgb(51,51,51)")
+			.attr("transform", function(d) { 
+	        return "translate(" + lgspot + ")"; });		  
 
-	  	svg.selectAll('path.state-boundary')
-	  		.attr("d", path);
+		  legendText.append("tspan")
+		  	.text("Wind Power Capacity")
+		  	.attr("x",0)
+	      .attr("y",0);
+
+		  legendText.append("tspan")
+		  	.text("In Gigawatts (GW)")
+		  	.attr("x",0)
+	      .attr("y",25);
+
+// hang the legend2 based on louisiana's location
+			var lgspot2 = [(radius(10)+25), 25];
+			var lgspot3 = [(radius(10)+25), (35 + (radius(10) * 2))];
+			
+			var legend2Text = svg.append("g")
+				.attr("class", "legend2Text lg")
+				.append("text")
+				.attr("dy", "1.3em")			  
+			  .attr("text-anchor","middle")
+
+			  legend2Text.append("tspan")
+			  .text("WIND POWER")
+			  .attr("x", function(d) { return  (radius(10)+25) })
+			  .attr("y", 0); 
+
+			  legend2Text.append("tspan")
+			  .text("TYPE")
+			  .attr("x", function(d) { return  (radius(10)+25) })
+			  .attr("y", 30); 
+
+			// add a second legend for the colors
+			legend2.append("circle")
+
+	    legend2.append("text")
+	      .attr("dy", "1.3em")
+	      .text(function(d){
+	      	return d;
+	      })
+	      .attr("text-anchor","middle")
+	      .attr("y", function(d) { return  radius(40)/2 })
+	      .attr("x", "0"); 
+	      
+			legend2        
+				.attr("transform", function(d) { 
+					if (d === "Land Based") {
+						return "translate(" + lgspot2 + ")"; 
+					} else{
+						return "translate(" + lgspot3 + ")"; 
+					}
+				});	        
+
+	    legend2.selectAll("circle")
+	    	.attr("class","lg")
+	    	.attr("cy","40")
+	      .attr("r", function(d) { return radius(12); })
+	      .attr("stroke", "#fff")
+	      .attr("fill", function(d) {
+	      	if (d === "Land Based") {
+		    		return "rgb(185,224,102)"
+		    	} else{
+		    		return "rgb(116,202,236)"
+		    	};	      	
+	      });
+
+	    legend2.selectAll("text")
+	    	.attr("class","lg")
+	      .attr("fill","rgb(51,51,51)"); 
 			
 			//define here instead of there because if global resets it to 0 automatically which is NOT good :)
 			var type = typeArray[k] // where to start
 			// console.log(type)
 			BuildBubbles(width, type);
-		}
-		
-		// Tooltips section goes here
+		}		
 
 		function BuildBubbles(w, type) {		
 
@@ -315,21 +389,23 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
       .append("g")
       .attr("id","piebox");    
 				
+				// This attempts to create the arrays in such a way to avoid throwing errors when the pie
+				// chart tries to build a nonexistent slice, i.e. when the slice is 0.
+				// This tries to make it so that the array simply doesn't have the "0" pie slice.
 				for (var i = 0; i < data2.length; i++) {					
 					centroidPie = path.centroid(data2[i]);
 					if (data2[i].properties[type[0]] < 0.1 && data2[i].properties[type[1]] < 0.1) {
 						data_array = [];
-					} else if (data2[i].properties[type[0]] < 0.1) {
+					} else if (data2[i].properties[type[0]] < 0.1) {						
 						var data_array = [
 	        		{type: "Offshore", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
 						];
-					} else if (data2[i].properties[type[0]] < 0.1)  {
+					} else if (data2[i].properties[type[1]] < 0.1)  {
 						var data_array = [
 							{type: "Land Based", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]}
 						];
-					} else {
+					} else {						
 						var data_array = [
-							// {name: data2[i].properties.name, id: "id"+i},
 							{type: "Land Based", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]},
 	        		{type: "Offshore", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
 						];
@@ -356,31 +432,6 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 
 				};
 
-		// This is a loop
-			// svg.selectAll("circle.bubble")
-	  // 		.data(topojson.feature(us, us.objects.us_10m).features
-	  // 		  .sort(function(a, b) { 
-	  // 		  	var raw1 = Number(a.properties[type[0]]) + Number(a.properties[type[1]])
-	  // 		  	var raw2 = Number(b.properties[type[0]]) + Number(b.properties[type[1]])
-	  // 		  	// console.log(raw1);
-	  // 		  	// console.log(raw2);
-	  // 		  	return raw2 - raw1; }))     
-		 //      .attr("transform", function(d) { 
-		 //        return "translate(" + path.centroid(d) + ")"; })
-		 //      .attr("r", function(d) { 		
-		 //      	var raw = Number(d.properties[type[0]]) + Number(d.properties[type[1]])
-
-		 //      	// console.log(type[0] + ': ' + d.properties[type[0]])
-
-
-		 //      	// We exclude all numbers smaller than 0.1 GW!
-		 //      	if (raw < 0.1) {
-		 //      	} else {
-		 //      		return radius(raw);
-		 //      	};						        
-		 //      })
-		 //      .attr("text", function(d){ return d.properties.id});		
-
 			var margin	= w / 20;
 			// var barWidth = w - margin*2 - 50;
 
@@ -394,7 +445,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 
 	// create the tooltip
 	function arctip(d) {     
-
+		var fart = d.data.name;
 		// grab the width to define breakpoints
 		width = parseInt(d3.select("#master_container").style("width"))
 
@@ -473,7 +524,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 
     toolbody.append("tspan")
       .text(function(d){
-        return "Total: " + (valuetip+other) + " GW";
+        return "Total: " + Math.round((valuetip+other)*100)/100 + " GW";
       })
       .attr("x",0)
       .attr("y",0);
@@ -493,14 +544,6 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
       .attr("x",0)
       .attr("y",15);
 
-    // toolbody.append("tspan")
-    //   .text(function(d){              
-    //     return "+X GW from 2000";
-    //   })
-    //   .attr("fill","#19A9E2")
-    //   .attr("x",0)
-    //   .attr("y",30);  
-
     svg.append("g")
       .attr("class", "closer tool")
       .attr("transform", function(){
@@ -508,7 +551,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
       })
         .append("text")
         .attr("class", "tip-text2 tool")
-        .text("x").on("click", function(){
+        .text("X").on("click", function(){
         	d3.selectAll(".tool").remove();
         });
 	} //end tooltip function
@@ -593,7 +636,8 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		}
 		
 	  // initial run
-	  resize(); 	    		  
+	  resize(); 	    
+	  // start();		  
 
 	  d3.select(window).on('resize', resize); 
 	  // d3.selectAll("circle.bubble").on('mouseover', tooltip);
@@ -607,29 +651,6 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 				d3.selectAll(".tool").remove();		  	
 		  }   
 		});
-		$(document).keydown(function(e) {
-    switch(e.which) {
-        case 37: // left
-        	console.log('left')
-        break;
-
-        case 38: // up
-	        console.log('up')
-        break;
-
-        case 39: // right
-        	console.log('right')
-        break;
-
-        case 40: // down
-        	console.log('down')
-        break;
-
-        default: return; // exit this handler for other keys
-    }
-    e.preventDefault(); // prevent the default action (scroll / move caret)
-});
-
 
 	  //function to add commas
 		function numberWithCommas(x) {
