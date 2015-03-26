@@ -637,7 +637,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		
 	  // initial run
 	  resize(); 	    
-	  // start();		  
+	  start();		  
 
 	  d3.select(window).on('resize', resize); 
 	  // d3.selectAll("circle.bubble").on('mouseover', tooltip);
