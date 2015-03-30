@@ -59,7 +59,7 @@ var pie = d3.layout.pie()
 
 (function ($) { 
 // load some data
-// d3.json("/sites/prod/files/us_93_02_v3.json", function(error, us) {
+// d3.json("/sites/prod/files/wind_vision_v10.json", function(error, us) {
 d3.json("js/wind_vision_v10.json", function(error, us) {
 	if (error) return console.error(error);
 
@@ -69,13 +69,13 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		
 		$('.year').click(function(e) {
 			if (m === 1) {
-				$('.rpt2 span img').attr('src', 'img/mediaButtons_play.png');				
+				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_play.png');				
 				m-=1;
 			};
 			clearInterval(play);
 			var width = parseInt(d3.select("#master_container").style("width"));
-			$('.year').removeClass('active');
-			$(this).addClass('active');
+			$('.year').removeClass('activea');
+			$(this).addClass('activea');
 			i =  Number($(this).attr("idnum"));
 			BuildBubbles(width);
 			// console.log("you selected the year, at index: " + i)
@@ -85,19 +85,19 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		function pause() {
 
 			if (m === 0 && i != num) {				
-				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png');				
+				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_pause.png');				
 				m+=1;
 				play = setInterval(mechanic,1000);	
 				// clearInterval(play);		 
 			} else if (m === 1 && i != num) {
-				$('.rpt2 span img').attr('src', 'img/mediaButtons_play.png');				
+				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_play.png');				
 				m-=1;
 				// play = setInterval(mechanic,1000);
 				clearInterval(play);	
 				// console.log('you cleared the interval in "pause"')
 			} else {
 				// console.log('end of loop and rebiginng')
-				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png'); //restart at the beginning??
+				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_pause.png'); //restart at the beginning??
 				i = 0;
 				play = setInterval(mechanic,1000);	
 				// here i want to reset the variables to i=0 m=0
@@ -349,8 +349,8 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 			d3.selectAll(".tool").remove();
 			d3.select("#piebox").remove();
 			
-			//Set the new active category before the build, then you just rebuild the new one
-			var gotype = $('.active').attr('data-year');
+			//Set the new activea category before the build, then you just rebuild the new one
+			var gotype = $('.activea').attr('datayear');
 
 		     if (gotype == "00") { var k = 0; var gotypename = "2000"; var statesnum = "4" ; var increase = 0; var prev_year = "2000"} 
 		else if (gotype == "10") { var k = 1; var gotypename = "2010"; var statesnum = "27"; var increase = 37.73; var prev_year = "2000"} 
@@ -561,7 +561,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		var i = 1; // which year you are on when you start 
 		var play;
 
-		var m=0;
+		var m=1;
 
 		function start() {
 			if (play != "undefined") {
@@ -577,19 +577,19 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		function pause() {
 
 			if (m === 0 && i != num) {				
-				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png');				
+				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_pause.png');				
 				m+=1;
 				play = setInterval(mechanic,1000);	
 				// clearInterval(play);		 
 			} else if (m === 1 && i != num) {
-				$('.rpt2 span img').attr('src', 'img/mediaButtons_play.png');				
+				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_play.png');				
 				m-=1;
 				// play = setInterval(mechanic,1000);
 				clearInterval(play);	
 				// console.log('you cleared the interval in "pause"')
 			} else {
 				// console.log('end of loop and rebiginng')
-				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png'); //restart at the beginning??
+				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_pause.png'); //restart at the beginning??
 				i = 0;
 				play = setInterval(mechanic,1000);	
 				// here i want to reset the variables to i=0 m=0
@@ -602,7 +602,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 			i += 1;		
 			rebuildLoop(i);
 			if (i === num) {							
-				$('.rpt2 span img').attr('src', 'img/mediaButtons_redo.png');				
+				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_redo.png');				
 				clearInterval(play);		 
 				// console.log('you cleared the interval by reaching the end of mechanic')
 			}									
@@ -618,17 +618,17 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 
 			//convaluted way to add next and next and next color to lis.			
 			if (i === 1) {
-				$('.year').removeClass('active');
-				$('.year:first-child').addClass('active')							
+				$('.year').removeClass('activea');
+				$('.year:first-child').addClass('activea')							
 			} else {
-				$('.active').next().addClass('active2')
-				$('.year').removeClass('active');
-				$('.active2').addClass('active');
-				$('.active').removeClass('active2');
+				$('.activea').next().addClass('activea2')
+				$('.year').removeClass('activea');
+				$('.activea2').addClass('activea');
+				$('.activea').removeClass('activea2');
 			};
 
 
-			// $(this).addClass('active');
+			// $(this).addClass('activea');
 			BuildBubbles(width);
 
 			// console.log('rebuildloop is at: ' + i)
@@ -658,5 +658,4 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		}
 }); //end states.json
 		}(jQuery));  
-
 

@@ -34,6 +34,9 @@ Legend
   padding-left: 10px;
   }
 
+  
+
+
 .my-legend .legend-scale ul li {
   display: block;
   font-family: "Avenir LT W02 35 Light",verdana,sans-serif;   
@@ -59,7 +62,7 @@ Legend
   /*transition: background-color 100ms ease-out;*/
 }
 
-.my-legend .legend-scale ul li.active {
+.my-legend .legend-scale ul li.activea {
   background-color: rgb(184,223,101);
   /*transition: background-color 100ms ease-out;*/
 }
@@ -80,6 +83,7 @@ Legend
 .my-legend .legend-scale ul li img {
   padding-top: 4px;
   height: 21px;
+  width: 21px;
 }
 
 .buttonsi {
