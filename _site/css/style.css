@@ -1,3 +1,13 @@
+#fold img{
+    z-index: 100;
+    /*margin-top: 30px;*/
+    position: absolute;
+    bottom: -25px;
+    right: 0px;
+    /*padding-bottom: 0px !important;
+    margin-bottom: 0px !important;*/
+}
+
 .green {
   color: #19A9E2;
 }
@@ -34,7 +44,7 @@ Legend
   padding-left: 10px;
   }
 
-  
+
 
 
 .my-legend .legend-scale ul li {
@@ -104,6 +114,7 @@ Legend
 
 #dis1 {
   background-color: rgb(221,221,221);
+  /*position: absolute;*/
 }
 
  #dis1  h1,  #dis1 h2,  #dis1 h3,  #dis1 h4, #dis1  p {
@@ -181,6 +192,7 @@ Legend
 /*Map stuff*/
 #master_container
 {
+  position: relative;
   font-family: 'PT Sans', sans-serif;
   font-size: 12px;
   background-color: #ddd;
@@ -405,6 +417,12 @@ cursor: pointer;
   width: 100%;
  }
 }
+@media (max-width:870px){
+  #fold img{ 
+    bottom: -35px;
+  }  
+}
+
 
 @media (max-width:800px){
  #master_container { 
@@ -446,6 +464,10 @@ cursor: pointer;
   line-height: 20px;
  }
  #post_content {width: 90%;} 
+
+ #fold img{ 
+  display: none;
+  }  
 }
 
 @media (max-width:480px){
