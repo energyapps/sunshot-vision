@@ -59,7 +59,7 @@ var pie = d3.layout.pie()
 
 (function ($) { 
 // load some data
-// d3.json("/sites/prod/files/wind_vision_v10.json", function(error, us) {
+// d3.json("/img/wind_vision_v10.json", function(error, us) {
 d3.json("js/wind_vision_v10.json", function(error, us) {
 	if (error) return console.error(error);
 
@@ -69,7 +69,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		
 		$('.year').click(function(e) {
 			if (m === 1) {
-				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_play.png');				
+				$('.rpt2 span img').attr('src', '/img/mediaButtons_play.png');				
 				m-=1;
 			};
 			clearInterval(play);
@@ -85,19 +85,19 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		function pause() {
 
 			if (m === 0 && i != num) {				
-				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_pause.png');				
+				$('.rpt2 span img').attr('src', '/img/mediaButtons_pause.png');				
 				m+=1;
 				play = setInterval(mechanic,1000);	
 				// clearInterval(play);		 
 			} else if (m === 1 && i != num) {
-				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_play.png');				
+				$('.rpt2 span img').attr('src', '/img/mediaButtons_play.png');				
 				m-=1;
 				// play = setInterval(mechanic,1000);
 				clearInterval(play);	
 				// console.log('you cleared the interval in "pause"')
 			} else {
 				// console.log('end of loop and rebiginng')
-				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_pause.png'); //restart at the beginning??
+				$('.rpt2 span img').attr('src', '/img/mediaButtons_pause.png'); //restart at the beginning??
 				i = 0;
 				play = setInterval(mechanic,1000);	
 				// here i want to reset the variables to i=0 m=0
@@ -577,19 +577,19 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		function pause() {
 
 			if (m === 0 && i != num) {				
-				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_pause.png');				
+				$('.rpt2 span img').attr('src', '/img/mediaButtons_pause.png');				
 				m+=1;
 				play = setInterval(mechanic,1000);	
 				// clearInterval(play);		 
 			} else if (m === 1 && i != num) {
-				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_play.png');				
+				$('.rpt2 span img').attr('src', '/img/mediaButtons_play.png');				
 				m-=1;
 				// play = setInterval(mechanic,1000);
 				clearInterval(play);	
 				// console.log('you cleared the interval in "pause"')
 			} else {
 				// console.log('end of loop and rebiginng')
-				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_pause.png'); //restart at the beginning??
+				$('.rpt2 span img').attr('src', '/img/mediaButtons_pause.png'); //restart at the beginning??
 				i = 0;
 				play = setInterval(mechanic,1000);	
 				// here i want to reset the variables to i=0 m=0
@@ -602,7 +602,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 			i += 1;		
 			rebuildLoop(i);
 			if (i === num) {							
-				$('.rpt2 span img').attr('src', '/sites/prod/files/mediaButtons_redo.png');				
+				$('.rpt2 span img').attr('src', '/img/mediaButtons_redo.png');				
 				clearInterval(play);		 
 				// console.log('you cleared the interval by reaching the end of mechanic')
 			}									
