@@ -5,7 +5,7 @@ var boxWidth = 40;
 var width = parseInt(d3.select("#master_container").style("width")),
   height = width / 2;
 
-var projection = d3.geo.albersUsa();
+var projection = d3.geo.albers();
 
 var path = d3.geo.path()
 	.projection(projection);
