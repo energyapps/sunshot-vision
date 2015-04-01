@@ -59,7 +59,7 @@ var pie = d3.layout.pie()
 
 (function ($) { 
 // load some data
-// d3.json("js/wind_vision_v10.json", function(error, us) {
+// d3.json("/sites/prod/files/wind_vision_50m_contiguous.json", function(error, us) {
 d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 	if (error) return console.error(error);
 

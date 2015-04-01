@@ -59,8 +59,8 @@ var pie = d3.layout.pie()
 
 (function ($) { 
 // load some data
-// d3.json("js/wind_vision_v10.json", function(error, us) {
 d3.json("/sites/prod/files/wind_vision_50m_contiguous.json", function(error, us) {
+// d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 	if (error) return console.error(error);
 
 	var TheData = topojson.feature(us, us.objects.us_50m_contiguous).features		
@@ -243,7 +243,7 @@ d3.json("/sites/prod/files/wind_vision_50m_contiguous.json", function(error, us)
 	      .text(function(d){return d});
 
 	      // hang the legend based on louisiana's location
-			var lgspot = [(path.centroid(TheData[29])[0] + (width / 7)),(path.centroid(TheData[29])[1] + (width / 20))] //using louisiana as reference
+			var lgspot = [(path.centroid(TheData[8])[0] + (width / 7)),(path.centroid(TheData[8])[1] + (width / 20))] //using louisiana as reference
 
 			legend        
 				// .attr("transform", "translate(" + (width - (radius(10000) + 10)) + "," + (height + 30) + ")");
