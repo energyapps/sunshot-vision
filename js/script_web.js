@@ -365,11 +365,11 @@ d3.json("/sites/prod/files/wind_vision_50m_contiguous.json", function(error, us)
 			var USA = Math.round((totalArray[(k*2)]+totalArray[(k*2 + 1)]) * 100) / 100;
 
 			if (gotypename === "2000") {
-				totalDiv.innerHTML = '<h2>Total Energy Produced in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3>';			
+				totalDiv.innerHTML = '<h2>Total Wind Capacity Installed in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3>';			
 			} else if (gotypename < 2014) {
-				totalDiv.innerHTML = '<h2>Total Energy Produced in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';			
+				totalDiv.innerHTML = '<h2>Total Wind Capacity Installed in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';			
 			} else {
-				totalDiv.innerHTML = '<h2>Total Energy Projected in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';		
+				totalDiv.innerHTML = '<h2>Total Wind Capacity Projected in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';		
 			};
 			
 			// redifine the radius of circles
