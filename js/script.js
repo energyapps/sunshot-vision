@@ -59,11 +59,11 @@ var pie = d3.layout.pie()
 
 (function ($) { 
 // load some data
-// d3.json("img/wind_vision_v10.json", function(error, us) {
-d3.json("js/wind_vision_v10.json", function(error, us) {
+// d3.json("js/wind_vision_v10.json", function(error, us) {
+d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 	if (error) return console.error(error);
 
-	var TheData = topojson.feature(us, us.objects.us_10m).features		
+	var TheData = topojson.feature(us, us.objects.us_50m_contiguous).features		
 
 		// Do something on the click of selector
 		
@@ -106,7 +106,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 		}
 
 // preload the data and sort it for year 2050
-		var data2 = topojson.feature(us, us.objects.us_10m).features
+		var data2 = topojson.feature(us, us.objects.us_50m_contiguous).features
 		.sort(function(a, b) { 
 			// return b.properties.Landbased2050 - a.properties.Landbased2050; 
 			var raw1 = Number(a.properties.Landbased2050) + Number(a.properties.Offshore2050)
@@ -158,13 +158,13 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 
 		//build a map outside of resize
 		svg.selectAll(".state")
-	    .data(topojson.feature(us, us.objects.us_10m).features)
+	    .data(topojson.feature(us, us.objects.us_50m_contiguous).features)
 	    .enter().append("path")
 	      .attr("class", function(d) {return "state " + d.id; });
 
 	      //this is building of the USA shape
 		svg.append("path")
-	    .datum(topojson.mesh(us, us.objects.us_10m, function(a,b) {return a !== b;}))
+	    .datum(topojson.mesh(us, us.objects.us_50m_contiguous, function(a,b) {return a !== b;}))
 	    .attr("class", "state-boundary");
 
 // build the bubbles/pies outside of the loop so that when you rebuild, 
@@ -175,7 +175,7 @@ d3.json("js/wind_vision_v10.json", function(error, us) {
 
 	 //      //build the bubbles for all data
 		// bubblediv.selectAll("circle")
-		// 	.data(topojson.feature(us, us.objects.us_10m).features)
+		// 	.data(topojson.feature(us, us.objects.us_50m_contiguous).features)
 		// 	.enter().append("circle")
 		// 	.attr("class", "bubble")   	
 
