@@ -15,27 +15,30 @@ var svg = d3.select("#map_container")
   .attr("height", height);
 
 var radius = d3.scale.sqrt()  
-	.domain([0, 5])
-	.range([(2), (width / 45)]); 
+	.domain([0, 24500])
+	.range([(5), (width / 15)]); 
 
+//change
 var legend = svg.append("g")
   .attr("class", "legend")    
   .selectAll("g")
-	.data([5, 20, 40])
+	.data([1000, 10000, 20000])
 	.enter().append("g");
 
+// change
 var legend2 = svg.append("g")
 	.attr("class", "legend2")
 	.selectAll("g")
-	.data(["Land Based","Offshore"])
+	.data(["Distributed PV","Utility","CSP"])
 	.enter().append("g")
 
 var imgWidth = 50;
 var imgHeight = 50;
 
+// change
 // Pie chart colors 
 var color = d3.scale.ordinal()
-    .range(["#8BCC00", "#19A9E2"]);
+    .range(["#FC3903", "#FC7F03","FFAB03"]);
 // Tomato FF6347
 // Neon Blue 00eeee
 // DOE pink E7227E
@@ -52,7 +55,7 @@ var arc = d3.svg.arc()
 
 var pie = d3.layout.pie()
   .sort(null)
-  .value(function(d){   
+  .value(function(d){ 
       return Number(d.value);
   });
 
@@ -60,10 +63,17 @@ var pie = d3.layout.pie()
 (function ($) { 
 // load some data
 // d3.json("/sites/prod/files/wind_vision_50m_contiguous.json", function(error, us) {
-d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
+
+// change
+// d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
+d3.json("data/sunshot_vision_1.json", function(error, us) {
+
 	if (error) return console.error(error);
 
-	var TheData = topojson.feature(us, us.objects.us_50m_contiguous).features		
+// change
+	var TheData = topojson.feature(us, us.objects.us_50m_sunshot).features		
+
+
 
 		// Do something on the click of selector
 		
@@ -78,8 +88,6 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 			$(this).addClass('activea');
 			i =  Number($(this).attr("idnum"));
 			BuildBubbles(width);
-			// console.log("you selected the year, at index: " + i)
-			// console.log("this is m: " + m)
 		});	
 
 		function pause() {
@@ -94,23 +102,30 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 				m-=1;
 				// play = setInterval(mechanic,1000);
 				clearInterval(play);	
-				// console.log('you cleared the interval in "pause"')
 			} else {
-				// console.log('end of loop and rebiginng')
 				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png'); //restart at the beginning??
 				i = 0;
 				play = setInterval(mechanic,1000);	
 				// here i want to reset the variables to i=0 m=0
 			}		
-			// console.log('you hit pause at: ' + i)		
 		}
 
-// preload the data and sort it for year 2050
-		var data2 = topojson.feature(us, us.objects.us_50m_contiguous).features
-		.sort(function(a, b) { 
-			// return b.properties.Landbased2050 - a.properties.Landbased2050; 
-			var raw1 = Number(a.properties.Landbased2050) + Number(a.properties.Offshore2050)
-	  	var raw2 = Number(b.properties.Landbased2050) + Number(b.properties.Offshore2050)
+// change 1
+// preload the data and sort it for year 2020
+		var data2 = topojson.feature(us, us.objects.us_50m_sunshot).features;
+
+// turn numbers into numbers from strings, remove commas too
+		data2.forEach(function(i){
+			for (var u in i.properties){				
+				if (u != "name") {
+					i.properties[u] = parseFloat(i.properties[u].replace(/,/g, ''));
+				};				
+			}
+		});
+
+		data2.sort(function(a, b) { 
+			var raw1 = a.properties.distPV2020 + a.properties.utilityPV2020 + a.properties.csp2020;
+	  	var raw2 = b.properties.distPV2020 + b.properties.utilityPV2020 + b.properties.csp2020;
 			return raw2 - raw1; 
 		});
 
@@ -118,53 +133,50 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 		for (var i = 0; i  < data2.length; i++) { 
 			var data3 = data2[i].properties;
 
-			totalArray[0]  = Number(data3.Landbased2000) + Number(totalArray[0]) ;
-			totalArray[1]  = Number(data3.Offshore2000)  + Number(totalArray[1]) ;
-			totalArray[2]  = Number(data3.Landbased2010) + Number(totalArray[2]) ;
-			totalArray[3]  = Number(data3.Offshore2010)  + Number(totalArray[3]) ;
-			totalArray[4]  = Number(data3.Landbased2013) + Number(totalArray[4]) ;
-			totalArray[5]  = Number(data3.Offshore2013)  + Number(totalArray[5]) ;
-			totalArray[6]  = Number(data3.Landbased2020) + Number(totalArray[6]) ;
-			totalArray[7]  = Number(data3.Offshore2020)  + Number(totalArray[7]) ;
-			totalArray[8]  = Number(data3.Landbased2030) + Number(totalArray[8]) ;
-			totalArray[9]  = Number(data3.Offshore2030)  + Number(totalArray[9]) ;
-			totalArray[10] = Number(data3.Landbased2050) + Number(totalArray[10]);
-			totalArray[11] = Number(data3.Offshore2050)  + Number(totalArray[11]);
+			totalArray[0]  = data3.distPV2005 + totalArray[0] ;
+			totalArray[1]  = data3.utilityPV2005  + totalArray[1] ;
+			totalArray[2]  = data3.csp2005 + totalArray[2] ;
+
+			totalArray[3]  = data3.distPV2010  + totalArray[3] ;
+			totalArray[4]  = data3.utilityPV2010 + totalArray[4] ;
+			totalArray[5]  = data3.csp2010  + totalArray[5] ;
+
+			totalArray[6]  = data3.distPV2015 + totalArray[6] ;
+			totalArray[7]  = data3.utilityPV2015  + totalArray[7] ;
+			totalArray[8]  = data3.csp2015 + totalArray[8] ;
+
+			totalArray[9]  = data3.distPV2020  + totalArray[9] ;
+			totalArray[10] = data3.utilityPV2020 + totalArray[10];
+			totalArray[11] = data3.cspPV2020  + totalArray[11];
 		};
 
-		var typeArray = [[],[],[],[],[],[]];
+		var typeArray = [[],[],[],[]];
 
 // This is where the data names are grouped.
 		for (var datapoint in data2[0].properties){
-		 	if (datapoint.slice(-2) == "00") {
+		 	if (datapoint.slice(-2) == "05") {
 	 			typeArray[0].push(datapoint)
 	 		}
 	 		else if (datapoint.slice(-2) == "10") {
 	 			typeArray[1].push(datapoint)
 	 		}
-	 		else if (datapoint.slice(-2) == "13") {
+	 		else if (datapoint.slice(-2) == "15") {
 	 			typeArray[2].push(datapoint)
 	 		}
 	 		else if (datapoint.slice(-2) == "20") {
 	 			typeArray[3].push(datapoint)
-	 		}	 		
-	 		else if (datapoint.slice(-2) == "30") {
-	 			typeArray[4].push(datapoint)
 	 		}
-	 		else if (datapoint.slice(-2) == "50") {
-	 			typeArray[5].push(datapoint)
-	 		};
 	 	}
 
 		//build a map outside of resize
 		svg.selectAll(".state")
-	    .data(topojson.feature(us, us.objects.us_50m_contiguous).features)
+	    .data(topojson.feature(us, us.objects.us_50m_sunshot).features)
 	    .enter().append("path")
 	      .attr("class", function(d) {return "state " + d.id; });
 
 	      //this is building of the USA shape
 		svg.append("path")
-	    .datum(topojson.mesh(us, us.objects.us_50m_contiguous, function(a,b) {return a !== b;}))
+	    .datum(topojson.mesh(us, us.objects.us_50m_sunshot, function(a,b) {return a !== b;}))
 	    .attr("class", "state-boundary");
 
 // build the bubbles/pies outside of the loop so that when you rebuild, 
@@ -175,7 +187,7 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 
 	 //      //build the bubbles for all data
 		// bubblediv.selectAll("circle")
-		// 	.data(topojson.feature(us, us.objects.us_50m_contiguous).features)
+		// 	.data(topojson.feature(us, us.objects.us_50m_sunshot).features)
 		// 	.enter().append("circle")
 		// 	.attr("class", "bubble")   	
 
@@ -217,9 +229,9 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 			var boxSegment = 3*boxWidth + (boxMargin);
 			var barWidth = width - margin - boxSegment;   
 
-			var radius = d3.scale.sqrt()  
-				.domain([0, 5])
-				.range([(2), (width / 45)]); 
+			var radius = d3.scale.linear()  
+				.domain([0, 34500])
+				.range([(5), (width / 15)]); 
 
 			var arc = d3.svg.arc()
 			  .outerRadius(function(d){    	
@@ -279,8 +291,9 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 	      .attr("y",25);
 
 // hang the legend2 based on louisiana's location
-			var lgspot2 = [(radius(10)+25), 25];
-			var lgspot3 = [(radius(10)+25), (35 + (radius(10) * 2))];
+			var lgspot2 = [(radius(20000)+25), 25];
+			var lgspot3 = [(radius(20000)+25), (35 + (radius(5000) * 2))];
+			var lgspot4 = [(radius(20000)+25), (100 + (radius(5000) * 2))];
 			
 			var legend2Text = svg.append("g")
 				.attr("class", "legend2Text lg")
@@ -290,12 +303,12 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 
 			  legend2Text.append("tspan")
 			  .text("WIND POWER")
-			  .attr("x", function(d) { return  (radius(10)+25) })
+			  .attr("x", function(d) { return  (radius(20000)+25) })
 			  .attr("y", 0); 
 
 			  legend2Text.append("tspan")
 			  .text("TYPE")
-			  .attr("x", function(d) { return  (radius(10)+25) })
+			  .attr("x", function(d) { return  (radius(20000)+25) })
 			  .attr("y", 30); 
 
 			// add a second legend for the colors
@@ -307,28 +320,32 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 	      	return d;
 	      })
 	      .attr("text-anchor","middle")
-	      .attr("y", function(d) { return  radius(40)/2 })
+	      .attr("y", function(d) { return  radius(10000)/2 })
 	      .attr("x", "0"); 
 	      
 			legend2        
 				.attr("transform", function(d) { 
-					if (d === "Land Based") {
+					if (d === "Distributed PV") {
 						return "translate(" + lgspot2 + ")"; 
-					} else{
+					} else if (d === "CSP"){
 						return "translate(" + lgspot3 + ")"; 
+					} else {
+						return "translate(" + lgspot4 + ")"; 
 					}
 				});	        
 
 	    legend2.selectAll("circle")
 	    	.attr("class","lg")
 	    	.attr("cy","40")
-	      .attr("r", function(d) { return radius(12); })
+	      .attr("r", function(d) { return radius(10000); })
 	      .attr("stroke", "#fff")
 	      .attr("fill", function(d) {
-	      	if (d === "Land Based") {
-		    		return "rgb(185,224,102)"
-		    	} else{
-		    		return "rgb(116,202,236)"
+	      	if (d === "Distributed PV") {
+		    		return "#FC3903"
+		    	} else if (d === "CSP"){
+		    		return "#FC7F03"
+		    	} else {
+		    		return "#FFAB03"
 		    	};	      	
 	      });
 
@@ -338,7 +355,6 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 			
 			//define here instead of there because if global resets it to 0 automatically which is NOT good :)
 			var type = typeArray[k] // where to start
-			// console.log(type)
 			BuildBubbles(width, type);
 		}		
 
@@ -352,14 +368,14 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 			//Set the new activea category before the build, then you just rebuild the new one
 			var gotype = $('.activea').attr('datayear');
 
-		     if (gotype == "00") { var k = 0; var gotypename = "2000"; var statesnum = "4" ; var increase = 0; var prev_year = "2000"} 
-		else if (gotype == "10") { var k = 1; var gotypename = "2010"; var statesnum = "27"; var increase = 37.73; var prev_year = "2000"} 
-		else if (gotype == "13") { var k = 2; var gotypename = "2013"; var statesnum = "34"; var increase = 20.84; var prev_year = "2010"} 
-		else if (gotype == "20") { var k = 3; var gotypename = "2020"; var statesnum = "36"; var increase = 52.31; var prev_year = "2013"} 
-		else if (gotype == "30") { var k = 4; var gotypename = "2030"; var statesnum = "47"; var increase = 110.66; var prev_year = "2020"} 
-		else if (gotype == "50") { var k = 5; var gotypename = "2050"; var statesnum = "48"; var increase = 180.15; var prev_year = "2030"};
+		     if (gotype == "05") { var k = 0; var gotypename = "2005"; var statesnum = "4" ; var increase = 0; var prev_year = "2000"} 
+		else if (gotype == "10") { var k = 1; var gotypename = "2010"; var statesnum = "27"; var increase = 37.73; var prev_year = "2005"} 
+		else if (gotype == "15") { var k = 2; var gotypename = "2015"; var statesnum = "34"; var increase = 20.84; var prev_year = "2010"} 
+		else if (gotype == "20") { var k = 3; var gotypename = "2020"; var statesnum = "36"; var increase = 52.31; var prev_year = "2015"} 		
 
 			var type = typeArray[k]
+
+			// console.log(typeArray)
 
 			// Redo the header info
 			var USA = Math.round((totalArray[(k*2)]+totalArray[(k*2 + 1)]) * 100) / 100;
@@ -374,12 +390,13 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 			
 			// redifine the radius of circles
 			var radius = d3.scale.sqrt()  
-				.domain([0, 5])
-				.range([(2), (w / 45)]); 
+				.domain([0, 24500])
+				.range([(5), (w / 15)]); 
 
 			var arc = d3.svg.arc()
 			  .outerRadius(function(d){    	
-			    	var x = Number(d.data.value) + Number(d.data.other)
+			  		// console.log(d)
+			    	var x = Number(d.data.value) + Number(d.data.other)			    	
 			      return radius(x); 
 			  })
 			  .innerRadius(0);
@@ -391,25 +408,42 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 				
 				// This attempts to create the arrays in such a way to avoid throwing errors when the pie
 				// chart tries to build a nonexistent slice, i.e. when the slice is 0.
-				// This tries to make it so that the array simply doesn't have the "0" pie slice.
+				// This tries to make it so that the array simply doesn't have the "0" pie slice.	
 				for (var i = 0; i < data2.length; i++) {					
 					centroidPie = path.centroid(data2[i]);
-					if (data2[i].properties[type[0]] < 0.1 && data2[i].properties[type[1]] < 0.1) {
-						data_array = [];
-					} else if (data2[i].properties[type[0]] < 0.1) {						
-						var data_array = [
-	        		{type: "Offshore", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
+
+					// console.log(type)
+					// console.log(data2[i].properties[type[2]] + 1000)
+
+					var data_array = [
+							{type: "Distributed PV", name:data2[i].properties.name,value: +data2[i].properties[type[0]], other: (+data2[i].properties[type[1]] + +data2[i].properties[type[2]]), x:centroidPie[0], y:centroidPie[1]},
+	        		{type: "Utility Scale PV", name:data2[i].properties.name,value: +data2[i].properties[type[1]], other: (+data2[i].properties[type[0]] + +data2[i].properties[type[2]]), x:centroidPie[0], y:centroidPie[1]},
+	        		{type: "CSP", name:data2[i].properties.name,value: +data2[i].properties[type[2]], other: (+data2[i].properties[type[0]] + +data2[i].properties[type[1]]), x:centroidPie[0], y:centroidPie[1]}
 						];
-					} else if (data2[i].properties[type[1]] < 0.1)  {
-						var data_array = [
-							{type: "Land Based", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]}
-						];
-					} else {						
-						var data_array = [
-							{type: "Land Based", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]},
-	        		{type: "Offshore", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
-						];
-					};
+
+					// if (data2[i].properties[type[0]] < 0.1 && data2[i].properties[type[1]] < 0.1 && data2[i].properties[type[2]] < 0.1) {
+					// 	data_array = [];
+					// } 
+					// else if (data2[i].properties[type[0]] < 0.1) {						
+					// 	var data_array = [
+	    //     		{type: "Utility Scale PV", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
+					// 	];
+					// } else if (data2[i].properties[type[1]] < 0.1)  {
+					// 	var data_array = [
+					// 		{type: "Distributed PV", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]}
+					// 	];
+					// } else if (data2[i].properties[type[2]] < 0.1)  {
+					// 	var data_array = [
+					// 		{type: "CSP", name:data2[i].properties.name,value: data2[i].properties[type[2]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]}
+					// 	];
+					// } 
+					// else {						
+					// 	var data_array = [
+					// 		{type: "Distributed PV", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]},
+	    //     		{type: "Utility Scale PV", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]},
+	    //     		{type: "CSP", name:data2[i].properties.name,value: data2[i].properties[type[2]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
+					// 	];
+					// };
 					
 					// console.log(data_array)
 
@@ -534,7 +568,7 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
         return typetip + ": " + valuetip + " GW";
       })
       .attr("fill", function(d){
-      	if (typetip === "Land Based") {
+      	if (typetip === "Distributed PV") {
       		return "#61AD00"
       	} else{
       		return "#19A9E2"
@@ -557,7 +591,7 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 	} //end tooltip function
 
 		// begin looping stuff
-		var num	= 6; //number of iterations, i.e. years		
+		var num	= 4; //number of iterations, i.e. years		
 		var i = 1; // which year you are on when you start 
 		var play;
 
@@ -586,15 +620,12 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 				m-=1;
 				// play = setInterval(mechanic,1000);
 				clearInterval(play);	
-				// console.log('you cleared the interval in "pause"')
 			} else {
-				// console.log('end of loop and rebiginng')
 				$('.rpt2 span img').attr('src', 'img/mediaButtons_pause.png'); //restart at the beginning??
 				i = 0;
 				play = setInterval(mechanic,1000);	
 				// here i want to reset the variables to i=0 m=0
 			}		
-			// console.log('you hit pause at: ' + i)		
 		}
 
 		// what to do each iteration
@@ -604,7 +635,6 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 			if (i === num) {							
 				$('.rpt2 span img').attr('src', 'img/mediaButtons_redo.png');				
 				clearInterval(play);		 
-				// console.log('you cleared the interval by reaching the end of mechanic')
 			}									
 		}
 
@@ -631,7 +661,6 @@ d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 			// $(this).addClass('activea');
 			BuildBubbles(width);
 
-			// console.log('rebuildloop is at: ' + i)
 			// BuildBubbles(width, type)
 		}
 		
