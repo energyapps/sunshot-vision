@@ -281,7 +281,7 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 	        return "translate(" + lgspot + ")"; });		  
 
 		  legendText.append("tspan")
-		  	.text("Wind Power Capacity")
+		  	.text("Solar Power Capacity")
 		  	.attr("x",0)
 	      .attr("y",0);
 
@@ -290,7 +290,7 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 		  	.attr("x",0)
 	      .attr("y",25);
 
-// hang the legend2 based on louisiana's location
+// hang the legend2 based on upper right
 			var lgspot2 = [(radius(20000)+25), 25];
 			var lgspot3 = [(radius(20000)+25), (35 + (radius(5000) * 2))];
 			var lgspot4 = [(radius(20000)+25), (100 + (radius(5000) * 2))];
@@ -302,7 +302,7 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 			  .attr("text-anchor","middle")
 
 			  legend2Text.append("tspan")
-			  .text("WIND POWER")
+			  .text("SOLAR POWER")
 			  .attr("x", function(d) { return  (radius(20000)+25) })
 			  .attr("y", 0); 
 
@@ -368,10 +368,10 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 			//Set the new activea category before the build, then you just rebuild the new one
 			var gotype = $('.activea').attr('datayear');
 
-		     if (gotype == "05") { var k = 0; var gotypename = "2005"; var statesnum = "4" ; var increase = 0; var prev_year = "2000"} 
-		else if (gotype == "10") { var k = 1; var gotypename = "2010"; var statesnum = "27"; var increase = 37.73; var prev_year = "2005"} 
-		else if (gotype == "15") { var k = 2; var gotypename = "2015"; var statesnum = "34"; var increase = 20.84; var prev_year = "2010"} 
-		else if (gotype == "20") { var k = 3; var gotypename = "2020"; var statesnum = "36"; var increase = 52.31; var prev_year = "2015"} 		
+		     if (gotype == "05") { var k = 0; var gotypename = "2005"; var statesnum = "21" ; var increase = 0; var prev_year = "2000"} 
+		else if (gotype == "10") { var k = 1; var gotypename = "2010"; var statesnum = "39"; var increase = 37.73; var prev_year = "2005"} 
+		else if (gotype == "15") { var k = 2; var gotypename = "2015"; var statesnum = "46"; var increase = 20.84; var prev_year = "2010"} 
+		else if (gotype == "20") { var k = 3; var gotypename = "2020"; var statesnum = "46"; var increase = 52.31; var prev_year = "2015"} 		
 
 			var type = typeArray[k]
 
@@ -381,11 +381,11 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 			var USA = Math.round((totalArray[(k*2)]+totalArray[(k*2 + 1)]) * 100) / 100;
 
 			if (gotypename === "2000") {
-				totalDiv.innerHTML = '<h2>Total Wind Capacity Installed in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3>';			
+				totalDiv.innerHTML = '<h2>Total Solar Capacity Installed in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3>';			
 			} else if (gotypename < 2014) {
-				totalDiv.innerHTML = '<h2>Total Wind Capacity Installed in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';			
+				totalDiv.innerHTML = '<h2>Total Solar Capacity Installed in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';			
 			} else {
-				totalDiv.innerHTML = '<h2>Total Wind Capacity Projected in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';		
+				totalDiv.innerHTML = '<h2>Total Solar Capacity Projected in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';		
 			};
 			
 			// redifine the radius of circles
@@ -413,7 +413,13 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 					centroidPie = path.centroid(data2[i]);
 
 					// console.log(type)
-					// console.log(data2[i].properties[type[2]] + 1000)
+					// console.log(data2[i].properties)
+
+					// for (var key in data2[i].properties) {
+
+					// 	console.log(key + " " + data2[i].properties[key])
+					// 	console.log(type)
+					// }
 
 					var data_array = [
 							{type: "Distributed PV", name:data2[i].properties.name,value: +data2[i].properties[type[0]], other: (+data2[i].properties[type[1]] + +data2[i].properties[type[2]]), x:centroidPie[0], y:centroidPie[1]},
@@ -455,7 +461,8 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
           .data(pie(data_array))
         		.enter().append("g")        		
 	          .attr("class", "arc")
-	          .attr("transform", function() { 
+	          .attr("transform", function(d) { 
+	          	// console.log(d)
           		return "translate(" + path.centroid(data2[i]) + ")"; 
         		})
         		.on("click", arctip);
