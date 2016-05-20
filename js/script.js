@@ -22,7 +22,7 @@ var radius = d3.scale.sqrt()
 var legend = svg.append("g")
   .attr("class", "legend")    
   .selectAll("g")
-	.data([1000, 10000, 20000])
+	.data([2000, 10000, 20000])
 	.enter().append("g");
 
 // change
@@ -38,7 +38,7 @@ var imgHeight = 50;
 // change
 // Pie chart colors 
 var color = d3.scale.ordinal()
-    .range(["#FC3903", "#FC7F03","FFAB03"]);
+    .range(["#FC3903", "#FC7F03","#FFAB03"]);
 // Tomato FF6347
 // Neon Blue 00eeee
 // DOE pink E7227E
@@ -252,10 +252,12 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 
 	    legend.append("text")
 	      .attr("dy", "1.3em")
-	      .text(function(d){return d});
+	      .text(d3.format(".1s"))
+	      // .text(function(d){return d});
+
 
 	      // hang the legend based on louisiana's location
-			var lgspot = [(path.centroid(TheData[8])[0] + (width / 7)),(path.centroid(TheData[8])[1] + (width / 20))] //using louisiana as reference
+			var lgspot = [(path.centroid(TheData[8])[0] + (width / 10)),(path.centroid(TheData[8])[1] + (width / 5))] //using louisiana as reference
 
 			legend        
 				// .attr("transform", "translate(" + (width - (radius(10000) + 10)) + "," + (height + 30) + ")");
@@ -412,46 +414,11 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 				for (var i = 0; i < data2.length; i++) {					
 					centroidPie = path.centroid(data2[i]);
 
-					// console.log(type)
-					// console.log(data2[i].properties)
-
-					// for (var key in data2[i].properties) {
-
-					// 	console.log(key + " " + data2[i].properties[key])
-					// 	console.log(type)
-					// }
-
 					var data_array = [
 							{type: "Distributed PV", name:data2[i].properties.name,value: +data2[i].properties[type[0]], other: (+data2[i].properties[type[1]] + +data2[i].properties[type[2]]), x:centroidPie[0], y:centroidPie[1]},
 	        		{type: "Utility Scale PV", name:data2[i].properties.name,value: +data2[i].properties[type[1]], other: (+data2[i].properties[type[0]] + +data2[i].properties[type[2]]), x:centroidPie[0], y:centroidPie[1]},
 	        		{type: "CSP", name:data2[i].properties.name,value: +data2[i].properties[type[2]], other: (+data2[i].properties[type[0]] + +data2[i].properties[type[1]]), x:centroidPie[0], y:centroidPie[1]}
-						];
-
-					// if (data2[i].properties[type[0]] < 0.1 && data2[i].properties[type[1]] < 0.1 && data2[i].properties[type[2]] < 0.1) {
-					// 	data_array = [];
-					// } 
-					// else if (data2[i].properties[type[0]] < 0.1) {						
-					// 	var data_array = [
-	    //     		{type: "Utility Scale PV", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
-					// 	];
-					// } else if (data2[i].properties[type[1]] < 0.1)  {
-					// 	var data_array = [
-					// 		{type: "Distributed PV", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]}
-					// 	];
-					// } else if (data2[i].properties[type[2]] < 0.1)  {
-					// 	var data_array = [
-					// 		{type: "CSP", name:data2[i].properties.name,value: data2[i].properties[type[2]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]}
-					// 	];
-					// } 
-					// else {						
-					// 	var data_array = [
-					// 		{type: "Distributed PV", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]},
-	    //     		{type: "Utility Scale PV", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]},
-	    //     		{type: "CSP", name:data2[i].properties.name,value: data2[i].properties[type[2]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
-					// 	];
-					// };
-					
-					// console.log(data_array)
+						];				
 
 					//Build the pie in D3 create a pie box for this particular state's pie
 					thisPie = piebox.append("g")
@@ -462,14 +429,16 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
         		.enter().append("g")        		
 	          .attr("class", "arc")
 	          .attr("transform", function(d) { 
-	          	// console.log(d)
-          		return "translate(" + path.centroid(data2[i]) + ")"; 
+	          	if (d.value != 0) {
+	          		return "translate(" + path.centroid(data2[i]) + ")"; 	
+	          	};	                    		
         		})
         		.on("click", arctip);
 					
 					g.append("path")
 	        .attr("d", arc)
-	        .style("fill", function(d) { return color(d.data.type); });
+	        .style("fill", function(d) { 
+	        	return color(d.data.type); });
 
 				};
 
