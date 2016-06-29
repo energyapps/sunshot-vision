@@ -22,7 +22,7 @@ var radius = d3.scale.sqrt()
 var legend = svg.append("g")
   .attr("class", "legend")    
   .selectAll("g")
-	.data([1000, 10000, 20000])
+	.data([2000, 10000, 20000])
 	.enter().append("g");
 
 // change
@@ -38,7 +38,7 @@ var imgHeight = 50;
 // change
 // Pie chart colors 
 var color = d3.scale.ordinal()
-    .range(["#FC3903", "#FC7F03","FFAB03"]);
+    .range(["#FC3903", "#FC7F03","#FFAB03"]);
 // Tomato FF6347
 // Neon Blue 00eeee
 // DOE pink E7227E
@@ -59,6 +59,22 @@ var pie = d3.layout.pie()
       return Number(d.value);
   });
 
+// add the bar chart parameters
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, (width/3)], .1);
+
+var y = d3.scale.linear()
+    .rangeRound([(height), (height/2)]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(d3.format(".2s"));
+
 
 (function ($) { 
 // load some data
@@ -67,13 +83,40 @@ var pie = d3.layout.pie()
 // change
 // d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 d3.json("data/sunshot_vision_1.json", function(error, us) {
-
 	if (error) return console.error(error);
+d3.csv("js/totals.csv", function(error, totals) {	
+	if (error) return console.error(error);
+
+ color.domain(d3.keys(totals[0]).filter(function(key) { return key !== "Year"; }));
+
+ 	// Make the break points for each bar amount
+  totals.forEach(function(d) {
+    var y0 = 0;
+    d.megawatts = color.domain().map(function(name) { return {name: name, y0: y0, y1: y0 += +d[name]}; });
+    d.total = d.megawatts[d.megawatts.length - 1].y1;
+  });
+
+  x.domain(totals.map(function(d) { return d.Year; }));
+  y.domain([0, d3.max(totals, function(d) { return d.total; })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("x",(-height/2))
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("megawatts");
 
 // change
 	var TheData = topojson.feature(us, us.objects.us_50m_sunshot).features		
-
-
 
 		// Do something on the click of selector
 		
@@ -252,10 +295,12 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 
 	    legend.append("text")
 	      .attr("dy", "1.3em")
-	      .text(function(d){return d});
+	      .text(d3.format(".1s"))
+	      // .text(function(d){return d});
+
 
 	      // hang the legend based on louisiana's location
-			var lgspot = [(path.centroid(TheData[8])[0] + (width / 7)),(path.centroid(TheData[8])[1] + (width / 20))] //using louisiana as reference
+			var lgspot = [(path.centroid(TheData[8])[0] + (width / 10)),(path.centroid(TheData[8])[1] + (width / 5))] //using louisiana as reference
 
 			legend        
 				// .attr("transform", "translate(" + (width - (radius(10000) + 10)) + "," + (height + 30) + ")");
@@ -281,7 +326,7 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 	        return "translate(" + lgspot + ")"; });		  
 
 		  legendText.append("tspan")
-		  	.text("Wind Power Capacity")
+		  	.text("Solar Power Capacity")
 		  	.attr("x",0)
 	      .attr("y",0);
 
@@ -290,7 +335,7 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 		  	.attr("x",0)
 	      .attr("y",25);
 
-// hang the legend2 based on louisiana's location
+// hang the legend2 based on upper right
 			var lgspot2 = [(radius(20000)+25), 25];
 			var lgspot3 = [(radius(20000)+25), (35 + (radius(5000) * 2))];
 			var lgspot4 = [(radius(20000)+25), (100 + (radius(5000) * 2))];
@@ -302,7 +347,7 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 			  .attr("text-anchor","middle")
 
 			  legend2Text.append("tspan")
-			  .text("WIND POWER")
+			  .text("SOLAR POWER")
 			  .attr("x", function(d) { return  (radius(20000)+25) })
 			  .attr("y", 0); 
 
@@ -368,10 +413,10 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 			//Set the new activea category before the build, then you just rebuild the new one
 			var gotype = $('.activea').attr('datayear');
 
-		     if (gotype == "05") { var k = 0; var gotypename = "2005"; var statesnum = "4" ; var increase = 0; var prev_year = "2000"} 
-		else if (gotype == "10") { var k = 1; var gotypename = "2010"; var statesnum = "27"; var increase = 37.73; var prev_year = "2005"} 
-		else if (gotype == "15") { var k = 2; var gotypename = "2015"; var statesnum = "34"; var increase = 20.84; var prev_year = "2010"} 
-		else if (gotype == "20") { var k = 3; var gotypename = "2020"; var statesnum = "36"; var increase = 52.31; var prev_year = "2015"} 		
+		     if (gotype == "05") { var k = 0; var gotypename = "2005"; var statesnum = "21" ; var increase = 0; var prev_year = "2000"} 
+		else if (gotype == "10") { var k = 1; var gotypename = "2010"; var statesnum = "39"; var increase = 37.73; var prev_year = "2005"} 
+		else if (gotype == "15") { var k = 2; var gotypename = "2015"; var statesnum = "46"; var increase = 20.84; var prev_year = "2010"} 
+		else if (gotype == "20") { var k = 3; var gotypename = "2020"; var statesnum = "46"; var increase = 52.31; var prev_year = "2015"} 		
 
 			var type = typeArray[k]
 
@@ -381,11 +426,11 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 			var USA = Math.round((totalArray[(k*2)]+totalArray[(k*2 + 1)]) * 100) / 100;
 
 			if (gotypename === "2000") {
-				totalDiv.innerHTML = '<h2>Total Wind Capacity Installed in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3>';			
+				totalDiv.innerHTML = '<h2>Total Solar Capacity Installed in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3>';			
 			} else if (gotypename < 2014) {
-				totalDiv.innerHTML = '<h2>Total Wind Capacity Installed in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';			
+				totalDiv.innerHTML = '<h2>Total Solar Capacity Installed in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';			
 			} else {
-				totalDiv.innerHTML = '<h2>Total Wind Capacity Projected in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';		
+				totalDiv.innerHTML = '<h2>Total Solar Capacity Projected in ' + gotypename + '</h2><h3>' + USA + ' GW across ' + statesnum + ' states</h3><h4>An increase of <span class="green">' + increase + ' GW</span> since ' + prev_year + '</h4>';		
 			};
 			
 			// redifine the radius of circles
@@ -412,40 +457,11 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 				for (var i = 0; i < data2.length; i++) {					
 					centroidPie = path.centroid(data2[i]);
 
-					// console.log(type)
-					// console.log(data2[i].properties[type[2]] + 1000)
-
 					var data_array = [
 							{type: "Distributed PV", name:data2[i].properties.name,value: +data2[i].properties[type[0]], other: (+data2[i].properties[type[1]] + +data2[i].properties[type[2]]), x:centroidPie[0], y:centroidPie[1]},
 	        		{type: "Utility Scale PV", name:data2[i].properties.name,value: +data2[i].properties[type[1]], other: (+data2[i].properties[type[0]] + +data2[i].properties[type[2]]), x:centroidPie[0], y:centroidPie[1]},
 	        		{type: "CSP", name:data2[i].properties.name,value: +data2[i].properties[type[2]], other: (+data2[i].properties[type[0]] + +data2[i].properties[type[1]]), x:centroidPie[0], y:centroidPie[1]}
-						];
-
-					// if (data2[i].properties[type[0]] < 0.1 && data2[i].properties[type[1]] < 0.1 && data2[i].properties[type[2]] < 0.1) {
-					// 	data_array = [];
-					// } 
-					// else if (data2[i].properties[type[0]] < 0.1) {						
-					// 	var data_array = [
-	    //     		{type: "Utility Scale PV", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
-					// 	];
-					// } else if (data2[i].properties[type[1]] < 0.1)  {
-					// 	var data_array = [
-					// 		{type: "Distributed PV", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]}
-					// 	];
-					// } else if (data2[i].properties[type[2]] < 0.1)  {
-					// 	var data_array = [
-					// 		{type: "CSP", name:data2[i].properties.name,value: data2[i].properties[type[2]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]}
-					// 	];
-					// } 
-					// else {						
-					// 	var data_array = [
-					// 		{type: "Distributed PV", name:data2[i].properties.name,value: data2[i].properties[type[0]], other: data2[i].properties[type[1]], x:centroidPie[0], y:centroidPie[1]},
-	    //     		{type: "Utility Scale PV", name:data2[i].properties.name,value: data2[i].properties[type[1]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]},
-	    //     		{type: "CSP", name:data2[i].properties.name,value: data2[i].properties[type[2]], other: data2[i].properties[type[0]], x:centroidPie[0], y:centroidPie[1]}
-					// 	];
-					// };
-					
-					// console.log(data_array)
+						];				
 
 					//Build the pie in D3 create a pie box for this particular state's pie
 					thisPie = piebox.append("g")
@@ -455,14 +471,17 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
           .data(pie(data_array))
         		.enter().append("g")        		
 	          .attr("class", "arc")
-	          .attr("transform", function() { 
-          		return "translate(" + path.centroid(data2[i]) + ")"; 
+	          .attr("transform", function(d) { 
+	          	if (d.value != 0) {
+	          		return "translate(" + path.centroid(data2[i]) + ")"; 	
+	          	};	                    		
         		})
         		.on("click", arctip);
 					
 					g.append("path")
 	        .attr("d", arc)
-	        .style("fill", function(d) { return color(d.data.type); });
+	        .style("fill", function(d) { 
+	        	return color(d.data.type); });
 
 				};
 
@@ -685,6 +704,22 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 		function numberWithCommas(x) {
 		  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		}
+
+		var year = svg.selectAll(".year")
+      .data(totals)
+    .enter().append("g")
+      .attr("class", "g")
+      .attr("transform", function(d) { return "translate(" + x(d.Year) + ",0)"; });
+
+  year.selectAll("rect")
+      .data(function(d) { return d.megawatts; })
+    .enter().append("rect")
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.y1)  ; })
+      .attr("height", function(d) { return y(d.y0) - y(d.y1); })
+      .style("fill", function(d) { return color(d.name); });
+		
+}); //end totals.csv
 }); //end states.json
-		}(jQuery));  
+}(jQuery));  
 

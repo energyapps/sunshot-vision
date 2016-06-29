@@ -59,6 +59,22 @@ var pie = d3.layout.pie()
       return Number(d.value);
   });
 
+// add the bar chart parameters
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, (width/3)], .1);
+
+var y = d3.scale.linear()
+    .rangeRound([(height), (height/2)]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(d3.format(".2s"));
+
 
 (function ($) { 
 // load some data
@@ -67,13 +83,40 @@ var pie = d3.layout.pie()
 // change
 // d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 d3.json("data/sunshot_vision_1.json", function(error, us) {
-
 	if (error) return console.error(error);
+d3.csv("js/totals.csv", function(error, totals) {	
+	if (error) return console.error(error);
+
+ color.domain(d3.keys(totals[0]).filter(function(key) { return key !== "Year"; }));
+
+ 	// Make the break points for each bar amount
+  totals.forEach(function(d) {
+    var y0 = 0;
+    d.megawatts = color.domain().map(function(name) { return {name: name, y0: y0, y1: y0 += +d[name]}; });
+    d.total = d.megawatts[d.megawatts.length - 1].y1;
+  });
+
+  x.domain(totals.map(function(d) { return d.Year; }));
+  y.domain([0, d3.max(totals, function(d) { return d.total; })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("x",(-height/2))
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("megawatts");
 
 // change
 	var TheData = topojson.feature(us, us.objects.us_50m_sunshot).features		
-
-
 
 		// Do something on the click of selector
 		
@@ -661,6 +704,22 @@ d3.json("data/sunshot_vision_1.json", function(error, us) {
 		function numberWithCommas(x) {
 		  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		}
+
+		var year = svg.selectAll(".year")
+      .data(totals)
+    .enter().append("g")
+      .attr("class", "g")
+      .attr("transform", function(d) { return "translate(" + x(d.Year) + ",0)"; });
+
+  year.selectAll("rect")
+      .data(function(d) { return d.megawatts; })
+    .enter().append("rect")
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.y1)  ; })
+      .attr("height", function(d) { return y(d.y0) - y(d.y1); })
+      .style("fill", function(d) { return color(d.name); });
+		
+}); //end totals.csv
 }); //end states.json
-		}(jQuery));  
+}(jQuery));  
 
