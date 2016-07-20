@@ -9,7 +9,7 @@
 }
 
 .green {
-  color: #19A9E2;
+  color: #FC3903;
 }
 
 .axis path,
@@ -25,6 +25,12 @@
 
 .x.axis path {
   display: none;
+}
+
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
 }
 
 
@@ -57,10 +63,16 @@ Legend
   /*position: relative;*/
   /*width: 100%;*/
   display: block;
-  padding-left: 10px;
+  padding-left: 43px;
   }
 
+#okayy {
+  padding-left: 10px;
+}
 
+.rectbar {
+  fill-opacity: 0.6;
+}
 
 
 .my-legend .legend-scale ul li {

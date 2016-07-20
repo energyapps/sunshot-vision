@@ -5,8 +5,8 @@ var boxWidth = 40;
 var width = parseInt(d3.select("#master_container").style("width")),
   height = width / 2;
 
-var projection = d3.geo.albers();
-
+var projection = d3.geo.albersUsa();
+	
 var path = d3.geo.path()
 	.projection(projection);
 
@@ -26,24 +26,16 @@ var legend = svg.append("g")
 	.enter().append("g");
 
 // change
-var legend2 = svg.append("g")
-	.attr("class", "legend2")
-	.selectAll("g")
-	.data(["Distributed PV","Utility","CSP"])
-	.enter().append("g")
-
-var imgWidth = 50;
-var imgHeight = 50;
+// var legend2 = svg.append("g")
+// 	.attr("class", "legend2")
+// 	.selectAll("g")
+// 	.data(["Distributed PV","Utility","CSP"])
+// 	.enter().append("g")
 
 // change
 // Pie chart colors 
 var color = d3.scale.ordinal()
     .range(["#FC3903", "#FC7F03","#FFAB03"]);
-// Tomato FF6347
-// Neon Blue 00eeee
-// DOE pink E7227E
-// DOE light blue 226 19A9E2
-// DOE Green 8BCC00
 
 // Other Pie chart parameters
 var arc = d3.svg.arc()
@@ -61,10 +53,13 @@ var pie = d3.layout.pie()
 
 // add the bar chart parameters
 var x = d3.scale.ordinal()
-    .rangeRoundBands([0, (width/3)], .1);
+    .rangeRoundBands([40, (width/4)], .1);
 
 var y = d3.scale.linear()
-    .rangeRound([(height), (height/2)]);
+    .rangeRound([(15 * height / 16), (10)]);
+
+var y2 = d3.scale.linear()
+    .rangeRound([(15 * height / 16), (10)]);
 
 var xAxis = d3.svg.axis()
     .scale(x)
@@ -75,17 +70,32 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .tickFormat(d3.format(".2s"));
 
+var yAxis2 = d3.svg.axis()
+    .scale(y2)
+    .orient("right")
+    .tickFormat(d3.format(".2s"));    
+
+var valueline1 = d3.svg.line()
+    .x(function(d) { return x(d.Year) + (x.rangeBand() / 2); })
+    .y(function(d) { return y2(d.resPVcost); });
+
+var valueline2 = d3.svg.line()
+    .x(function(d) { return x(d.Year) + (x.rangeBand() / 2); })
+    .y(function(d) { return y2(d.comPVcost); });
+  
+var valueline3 = d3.svg.line()
+    .x(function(d) { return x(d.Year) + (x.rangeBand() / 2); })
+    .y(function(d) { return y2(d.utilityPVcost); });
 
 (function ($) { 
 // load some data
-// d3.json("/sites/prod/files/wind_vision_50m_contiguous.json", function(error, us) {
-
-// change
 // d3.json("js/wind_vision_50m_contiguous.json", function(error, us) {
 d3.json("data/sunshot_vision_1.json", function(error, us) {
 	if (error) return console.error(error);
 d3.csv("js/totals.csv", function(error, totals) {	
 	if (error) return console.error(error);
+d3.csv("js/costs.csv", function(error, costs) {	
+	if (error) return console.error(error);	
 
  color.domain(d3.keys(totals[0]).filter(function(key) { return key !== "Year"; }));
 
@@ -98,22 +108,32 @@ d3.csv("js/totals.csv", function(error, totals) {
 
   x.domain(totals.map(function(d) { return d.Year; }));
   y.domain([0, d3.max(totals, function(d) { return d.total; })]);
+  y2.domain([0, d3.max(costs, function(d) { return d.resPVcost; })]);
+
 
   svg.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0," + (15 * height / 16) + ")")
       .call(xAxis);
 
   svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
+      .attr("class", "y axis")  
+      .attr("transform", "translate(40,0)")    
+      .call(yAxis)      
     .append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("x",(-height/2))
+      .attr("y", 2)
+      .attr("x",(-10))
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("megawatts");
+
+  var axis2 = svg.append("g")				
+	  .attr("class", "y axis")	
+	  .attr("transform", "translate(" + width / 4 + " ,0)")	
+	  // .style("fill", "red")		
+	  .call(yAxis2);
+	  
 
 // change
 	var TheData = topojson.feature(us, us.objects.us_50m_sunshot).features		
@@ -260,8 +280,8 @@ d3.csv("js/totals.csv", function(error, totals) {
 			// full viewport
 			else {
 				projection
-					.scale(width)
-					.translate([width / 2, ((height / 2) + 10)])   
+					.scale(width*0.95)
+					.translate([18*width/29, ((height / 2) + 10)])   
 			};	    
 
 			var margin	= width / 20;
@@ -300,7 +320,7 @@ d3.csv("js/totals.csv", function(error, totals) {
 
 
 	      // hang the legend based on louisiana's location
-			var lgspot = [(path.centroid(TheData[8])[0] + (width / 10)),(path.centroid(TheData[8])[1] + (width / 5))] //using louisiana as reference
+			var lgspot = [(path.centroid(TheData[8])[0] + (width / 20)),(path.centroid(TheData[8])[1] + (width / 5))] //using louisiana as reference
 
 			legend        
 				// .attr("transform", "translate(" + (width - (radius(10000) + 10)) + "," + (height + 30) + ")");
@@ -340,63 +360,63 @@ d3.csv("js/totals.csv", function(error, totals) {
 			var lgspot3 = [(radius(20000)+25), (35 + (radius(5000) * 2))];
 			var lgspot4 = [(radius(20000)+25), (100 + (radius(5000) * 2))];
 			
-			var legend2Text = svg.append("g")
-				.attr("class", "legend2Text lg")
-				.append("text")
-				.attr("dy", "1.3em")			  
-			  .attr("text-anchor","middle")
+			// var legend2Text = svg.append("g")
+			// 	.attr("class", "legend2Text lg")
+			// 	.append("text")
+			// 	.attr("dy", "1.3em")			  
+			//   .attr("text-anchor","middle")
 
-			  legend2Text.append("tspan")
-			  .text("SOLAR POWER")
-			  .attr("x", function(d) { return  (radius(20000)+25) })
-			  .attr("y", 0); 
+			//   legend2Text.append("tspan")
+			//   .text("SOLAR POWER")
+			//   .attr("x", function(d) { return  (radius(20000)+25) })
+			//   .attr("y", 0); 
 
-			  legend2Text.append("tspan")
-			  .text("TYPE")
-			  .attr("x", function(d) { return  (radius(20000)+25) })
-			  .attr("y", 30); 
+			//   legend2Text.append("tspan")
+			//   .text("TYPE")
+			//   .attr("x", function(d) { return  (radius(20000)+25) })
+			//   .attr("y", 30); 
 
 			// add a second legend for the colors
-			legend2.append("circle")
+			// legend2.append("circle")
 
-	    legend2.append("text")
-	      .attr("dy", "1.3em")
-	      .text(function(d){
-	      	return d;
-	      })
-	      .attr("text-anchor","middle")
-	      .attr("y", function(d) { return  radius(10000)/2 })
-	      .attr("x", "0"); 
+	  //   legend2.append("text")
+	  //     .attr("dy", "1.3em")
+	  //     .text(function(d){
+	  //     	return d;
+	  //     })
+	  //     .attr("text-anchor","middle")
+	  //     .attr("y", function(d) { return  radius(10000)/2 })
+	  //     .attr("x", "0"); 
 	      
-			legend2        
-				.attr("transform", function(d) { 
-					if (d === "Distributed PV") {
-						return "translate(" + lgspot2 + ")"; 
-					} else if (d === "CSP"){
-						return "translate(" + lgspot3 + ")"; 
-					} else {
-						return "translate(" + lgspot4 + ")"; 
-					}
-				});	        
+			// legend2        
+			// 	.attr("transform", function(d) { 
+			// 		if (d === "Distributed PV") {
+			// 			return "translate(" + lgspot2 + ")"; 
+			// 		} else if (d === "CSP"){
+			// 			return "translate(" + lgspot4 + ")"; 
+			// 		} else {
+			// 			return "translate(" + lgspot3 + ")"; 
+			// 		}
+			// 	});	        
 
-	    legend2.selectAll("circle")
-	    	.attr("class","lg")
-	    	.attr("cy","40")
-	      .attr("r", function(d) { return radius(10000); })
-	      .attr("stroke", "#fff")
-	      .attr("fill", function(d) {
-	      	if (d === "Distributed PV") {
-		    		return "#FC3903"
-		    	} else if (d === "CSP"){
-		    		return "#FC7F03"
-		    	} else {
-		    		return "#FFAB03"
-		    	};	      	
-	      });
+	  //   legend2.selectAll("circle")
+	  //   	.attr("class","lg")
+	  //   	.attr("cy","40")
+	  //     .attr("r", function(d) { return radius(10000); })
+	  //     .attr("stroke", "#fff")
+	  //     .attr("fill", function(d) {
+	  //     	if (d === "Distributed PV") {
+		 //    		return "#FC3903"
+		 //    	} else if (d === "CSP"){
+		 //    		return "#FFAB03"
+		 //    	} else {
+		 //    		return "#FC7F03"
+		 //    	};	      	
+	  //     });
 
-	    legend2.selectAll("text")
-	    	.attr("class","lg")
-	      .attr("fill","rgb(51,51,51)"); 
+	  //   legend2.selectAll("text")
+	  //   	.attr("class","lg")
+	  //     .attr("fill","rgb(51,51,51)"); 
 			
 			//define here instead of there because if global resets it to 0 automatically which is NOT good :)
 			var type = typeArray[k] // where to start
@@ -420,8 +440,6 @@ d3.csv("js/totals.csv", function(error, totals) {
 
 			var type = typeArray[k]
 
-			// console.log(typeArray)
-
 			// Redo the header info
 			var USA = Math.round((totalArray[(k*2)]+totalArray[(k*2 + 1)]) * 100) / 100;
 
@@ -440,7 +458,6 @@ d3.csv("js/totals.csv", function(error, totals) {
 
 			var arc = d3.svg.arc()
 			  .outerRadius(function(d){    	
-			  		// console.log(d)
 			    	var x = Number(d.data.value) + Number(d.data.other)			    	
 			      return radius(x); 
 			  })
@@ -588,11 +605,13 @@ d3.csv("js/totals.csv", function(error, totals) {
       })
       .attr("fill", function(d){
       	if (typetip === "Distributed PV") {
-      		return "#61AD00"
-      	} else{
-      		return "#19A9E2"
+      		return "#FC3903"
+      	} else if (typetip === "CSP"){
+      		return "#FFAB03"
+      	} else {
+      		return "#FC7F03"
       	};
-      		
+     // .range(["#FC3903", "#FC7F03","#FFAB03"]);     		
       })
       .attr("x",0)
       .attr("y",15);
@@ -714,11 +733,56 @@ d3.csv("js/totals.csv", function(error, totals) {
   year.selectAll("rect")
       .data(function(d) { return d.megawatts; })
     .enter().append("rect")
+    	.attr("class","rectbar")
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return y(d.y1)  ; })
       .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-      .style("fill", function(d) { return color(d.name); });
-		
+      .style("fill", function(d) {
+       return color(d.name); });
+
+
+		svg.append("path")        // Add the valueline2 path.
+      .style("stroke", "black")
+      .attr("d", valueline1(costs));
+
+  	svg.append("path")        // Add the valueline2 path.
+      .style("stroke", "black")
+      .attr("d", valueline2(costs));
+
+    svg.append("path")        // Add the valueline2 path.
+      .style("stroke", "black")
+      .attr("d", valueline3(costs));
+
+    svg.selectAll("dot")
+        .data(costs)
+      .enter().append("circle")
+        .attr("r", 3.5)
+        .attr("cx", function(d) { return x(d.Year) + (x.rangeBand() / 2); })
+        .attr("cy", function(d) { return y2(d.resPVcost); });      
+
+		svg.selectAll("dot")
+        .data(costs)
+      .enter().append("circle")
+        .attr("r", 3.5)
+        .attr("cx", function(d) { return x(d.Year) + (x.rangeBand() / 2); })
+        .attr("cy", function(d) { return y2(d.comPVcost); });              
+
+		svg.selectAll("dot")
+        .data(costs)
+      .enter().append("circle")
+        .attr("r", 3.5)
+        .attr("cx", function(d) { return x(d.Year) + (x.rangeBand() / 2); })
+        .attr("cy", function(d) { return y2(d.utilityPVcost); });              
+
+    axis2.append("text")
+	    .attr("transform", "rotate(-90)")
+	    .attr("y", -20)
+	    .attr("x",(-15))
+	    .attr("dy", ".71em")
+	    .style("text-anchor", "end")
+	    .text("price");
+
+}); //end costs.csv		
 }); //end totals.csv
 }); //end states.json
 }(jQuery));  
